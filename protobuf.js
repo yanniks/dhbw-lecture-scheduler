@@ -24,7 +24,7 @@ this.generateProtobufForCourse = function(json, callback) {
 	});
 }
 this.generateProtobufCourseList = function(json, callback) {
-	protobuf.load("protos/Lecture.proto", function(err, root) {
+	protobuf.load("protos/lecture.proto", function(err, root) {
 	    if (err) throw err;
 
 	    // Obtain a message type
