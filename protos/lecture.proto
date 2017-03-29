@@ -1,0 +1,24 @@
+syntax = "proto3";
+package dhbw.servercommunication;
+
+message ServerLectureResponse {
+	repeated Lecture lectures = 1;
+}
+
+message Lecture {
+	string begin = 1;
+	string end = 2;
+	string title = 3;
+	string location = 4;
+	string date = 5;
+	string prof = 6;
+}
+
+message ServerCourseResponse {
+	repeated Course courses = 1;
+}
+
+message Course {
+	string id = 1;
+	string title = 2;
+}

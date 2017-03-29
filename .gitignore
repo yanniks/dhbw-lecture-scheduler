@@ -5,6 +5,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Apple files
+.DS_Store
+
 # Runtime data
 pids
 *.pid
@@ -57,3 +60,7 @@ typings/
 # dotenv environment variables file
 .env
 
+# DHBW files
+*.pdf
+*.json
+*.csv
