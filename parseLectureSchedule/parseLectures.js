@@ -17,6 +17,7 @@ this.parseLectures = function(course, callback) {
 					});
 				});
 			} else {
+				try {fs.unlinkSync(filename);} catch (err) {}
 				fs.readFile( 'tmp/' + filename + '.csv', function (err, data) {
 					gd.getDates(course, data.toString(), function(schedule) {
 						callback(schedule);
