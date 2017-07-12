@@ -66,7 +66,7 @@ this.getDates = function(course, content, callback) {
 						if (loc)
 							ap.location = loc;
 						else
-							ap.location = "Raum 4.12";
+							ap.location = "Raum 4.10";
 						output.push(ap);
 					}
 					appointment = "";
