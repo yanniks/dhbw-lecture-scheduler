@@ -7,7 +7,7 @@ function isNumeric(n) {
 
 function updateTitle(title) {
 	var appointment = title.trim();
-	if (appointment == "IuF") return "Investition und Finanzierung";
+	appointment = appointment.replace("IuF","Investition und Finanzierung");
 	return appointment;
 }
 
