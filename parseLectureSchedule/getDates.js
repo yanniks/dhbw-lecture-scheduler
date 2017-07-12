@@ -5,6 +5,12 @@ function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+function updateTitle(title) {
+	var appointment = title.trim();
+	if (appointment == "IuF") return "Investition und Finanzierung";
+	return appointment;
+}
+
 this.getDates = function(course, content, callback) {
 	createday.createDay(content, function(days) {
 		var output = [];
@@ -48,7 +54,7 @@ this.getDates = function(course, content, callback) {
 				}
 				if (isDate) {
 					if (appointment != "") {
-						appointment = appointment.trim();
+						appointment = updateTitle(appointment);
 						var timesplit = timeframe.replace(/\./g,':').split('-');
 						var ap = {date: date, title: appointment};
 						if (timesplit[0])
@@ -86,7 +92,7 @@ this.getDates = function(course, content, callback) {
 				}
 			}
 			if (appointment != "") {
-				appointment = appointment.trim();
+				appointment = updateTitle(appointment);
 				var timesplit = timeframe.replace(/\./g,':').split('-');
 				var ap = {date: date, title: appointment};
 				if (timesplit[0])
