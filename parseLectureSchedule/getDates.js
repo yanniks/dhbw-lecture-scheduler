@@ -74,7 +74,7 @@ this.getDates = function(course, content, callback) {
 						}
 					}
 					var timeframe = line;
-				} else if (line.includes("Raum ") || line.includes("R. ")) {
+				} else if (line.includes("Raum ") || line.includes("R. ") || line.includes("P50 ")) {
 					loc = line;
 				} else if (line != "" && !line.includes("Woche ")) {
 					if (line[line.length - 1] == "-") {
