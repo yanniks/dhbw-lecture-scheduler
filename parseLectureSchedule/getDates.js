@@ -19,6 +19,7 @@ this.getDates = function(course, content, callback) {
 			var loc = "";
 			for (linei in day) {
 				var line = day[linei];
+				line = line.replace("XXX","");
 				var isDate = false;
 				if (line.includes(' - ')) isDate = true;
 				else {
