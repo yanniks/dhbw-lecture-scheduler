@@ -1,9 +1,11 @@
 FROM finanzcheck/docker-node-java
 
 COPY . /dhbw/
-RUN mkdir /dhbw/tmp
-RUN chmod +x /dhbw/dhbw-run
+RUN mkdir /dhbw/tmp && \
+  chmod +x /dhbw/dhbw-run && \
+  bash -c cd /dhbw && \
+  npm install
 
-EXPOSE 80
+EXPOSE 3000
 
 CMD ["/dhbw/dhbw-run"]
