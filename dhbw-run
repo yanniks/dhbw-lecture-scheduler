@@ -1,0 +1,4 @@
+#!/bin/bash
+cd /dhbw
+npm install
+node index.js
