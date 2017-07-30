@@ -1,15 +1,12 @@
-var protobuf = require("protobufjs");
+var proto = require("./protos/protos.js")
 
 this.generateProtobufForCourse = function(json, callback) {
-	protobuf.load("protos/lecture.proto", function(err, root) {
-	    if (err) throw err;
 
 	    // Obtain a message type
-	    var Lecture = root.lookup("dhbw.servercommunication.Lecture");
-		var ServerLectureResponse = root.lookup("dhbw.servercommunication.ServerLectureResponse");
+	    var Lecture = proto.dhbw.servercommunication.Lecture;
+		var ServerLectureResponse = proto.dhbw.servercommunication.ServerLectureResponse;
 
 	    // Create a new message
-		
 		var lecturesArray = [];
 		for (i in json) {
 			var lect = json[i];
@@ -21,7 +18,6 @@ this.generateProtobufForCourse = function(json, callback) {
 	    // Encode a message to an Uint8Array (browser) or Buffer (node)
 	    var buffer = ServerLectureResponse.encode(response).finish();
 		callback(buffer);
-	});
 }
 this.generateProtobufCourseList = function(json, callback) {
 	protobuf.load("protos/lecture.proto", function(err, root) {
