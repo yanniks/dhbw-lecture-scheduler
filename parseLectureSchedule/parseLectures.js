@@ -7,7 +7,7 @@ this.parseLectures = function(course, callback) {
 			if (!result) {
 				try {fs.unlinkSync('tmp/' + filename + '.csv');} catch (err) {}
 				try {fs.unlinkSync('tmp/' + filename);} catch (err) {}
-				mv(filename, 'tmp/' + filename, function (err) {
+				mv(filename, 'tmp/' + filename, {mkdirp: true}, function (err) {
 					if (err) throw err;
 					exec("java -Dfile.encoding=UTF-8 -jar java/tabula-0.9.2-jar-with-dependencies.jar -g -n -o tmp/" + filename + ".csv tmp/" + filename, function(error, stdout, stderr) {
 						if (error) throw error;
