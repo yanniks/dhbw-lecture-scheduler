@@ -12,7 +12,7 @@ this.compareFiles = function(filename, callback) {
 	if (fs.existsSync("tmp/" + filename) && fs.existsSync("tmp/" + (filename + ".csv"))) {
 		fs.readFile("tmp/" + filename, function (errOld, dataOld) {
 		    var oldFile = checksum(dataOld, 'sha256');
-			fs.readFile("tmp/" + filename, function (errNew, dataNew) {
+			fs.readFile("tmp/new." + filename, function (errNew, dataNew) {
 				var newFile = checksum(dataNew, 'sha256');
 				callback(newFile == oldFile);
 			});
