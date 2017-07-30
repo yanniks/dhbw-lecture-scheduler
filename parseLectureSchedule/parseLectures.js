@@ -8,7 +8,10 @@ this.parseLectures = function(course, callback) {
 				try {fs.unlinkSync('tmp/' + filename + '.csv');} catch (err) {}
 				try {fs.unlinkSync('tmp/' + filename);} catch (err) {}
 				fs.rename(filename, 'tmp/' + filename, function (err) {
+					if (err) throw err;
 					exec("java -Dfile.encoding=UTF-8 -jar java/tabula-0.9.2-jar-with-dependencies.jar -g -n -o tmp/" + filename + ".csv tmp/" + filename, function(error, stdout, stderr) {
+						if (error) throw error;
+						if (stderr) throw stderr;
 						fs.readFile( 'tmp/' + filename + '.csv', function (err, data) {
 							if (err) throw err
 							gd.getDates(course, data.toString(), function(schedule) {
