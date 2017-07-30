@@ -1,5 +1,6 @@
 var createday = require('./createDay.js');
 var getprof = require('./getProf.js');
+var moment = require('moment-timezone');
 
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
@@ -11,29 +12,24 @@ function updateTitle(title) {
 	return appointment;
 }
 
-function ISODateString(d) {
- function pad(n){return n<10 ? '0'+n : n}
- return d.getUTCFullYear()+'-'
-      + pad(d.getUTCMonth()+1)+'-'
-      + pad(d.getUTCDate())+'T'
-      + pad(d.getUTCHours())+':'
-      + pad(d.getUTCMinutes())+':'
-      + pad(d.getUTCSeconds())+'Z'}
-
 function generateDateObject(date, time, end) {
 	var year = date.substring(0, 4);
-	var month = date.substring(4, 6) - 1;
+	var month = date.substring(4, 6);
 	var day = date.substring(6, 8);
-	var date = new Date(year, month, day);
+	var date = new Date(Date.UTC(year, month, day));
+	var timestring = year + month + day;
+	var m = moment(timestring, "YYYYMMDD");
 	if (time) {
 		var split = time.split(':');
 		var hour = split[0];
 		var minute = split[1];
-		date = new Date(year, month, day, hour, minute);
+		m.set('hour', hour);
+		m.set('minute', minute);
 	} else if (end) {
-		date.setDate(date.getDate() + 86400000);
+		m.add(1, 'day');
 	}
-	return ISODateString(date);
+	m.tz('UTC');
+	return m.format();
 }
 
 this.getDates = function(course, content, callback) {
@@ -140,6 +136,7 @@ this.getDates = function(course, content, callback) {
 			item.end = generateDateObject(item.date,item.end,true);
 			delete item.date;
 		}
+		console.log(output);
 		callback(output);
 	})
 }
