@@ -11,6 +11,31 @@ function updateTitle(title) {
 	return appointment;
 }
 
+function ISODateString(d) {
+ function pad(n){return n<10 ? '0'+n : n}
+ return d.getUTCFullYear()+'-'
+      + pad(d.getUTCMonth()+1)+'-'
+      + pad(d.getUTCDate())+'T'
+      + pad(d.getUTCHours())+':'
+      + pad(d.getUTCMinutes())+':'
+      + pad(d.getUTCSeconds())+'Z'}
+
+function generateDateObject(date, time, end) {
+	var year = date.substring(0, 4);
+	var month = date.substring(4, 6);
+	var day = date.substring(6, 8);
+	var date = new Date(year, month, day);
+	if (time) {
+		var split = time.split(':');
+		var hour = split[0];
+		var minute = split[1];
+		date = new Date(year, month, day, hour, minute);
+	} else if (end) {
+		date.setDate(date.getDate() + 86400000);
+	}
+	return ISODateString(date);
+}
+
 this.getDates = function(course, content, callback) {
 	createday.createDay(content, function(days) {
 		var output = [];
@@ -107,6 +132,13 @@ this.getDates = function(course, content, callback) {
 					ap.location = "Raum 4.10";
 				output.push(ap);
 			}
+		}
+		
+		for (i in output) {
+			var item = output[i];
+			item.begin = generateDateObject(item.date,item.begin,false);
+			item.end = generateDateObject(item.date,item.end,false);
+			delete item.date;
 		}
 		callback(output);
 	})
