@@ -22,7 +22,7 @@ function ISODateString(d) {
 
 function generateDateObject(date, time, end) {
 	var year = date.substring(0, 4);
-	var month = date.substring(4, 6);
+	var month = date.substring(4, 6) - 1;
 	var day = date.substring(6, 8);
 	var date = new Date(year, month, day);
 	if (time) {
