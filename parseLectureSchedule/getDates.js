@@ -137,7 +137,7 @@ this.getDates = function(course, content, callback) {
 		for (i in output) {
 			var item = output[i];
 			item.begin = generateDateObject(item.date,item.begin,false);
-			item.end = generateDateObject(item.date,item.end,false);
+			item.end = generateDateObject(item.date,item.end,true);
 			delete item.date;
 		}
 		callback(output);
