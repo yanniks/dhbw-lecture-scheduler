@@ -2,11 +2,11 @@ var fd = require('./fileDownload.js'), fc = require('./fileComparison.js'), fs =
 var courses = { wwi2016a: "http://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Wenger/Vorlesungsplan_2016A_3Sem.pdf", wwi2015a: "http://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Wenger/Vorlesungsplan_WWI2015A_4Sem.pdf" };
 
 this.parseLectures = function(course, callback) {
+	try {fs.unlinkSync('tmp/new.' + filename);} catch (err) {}
 	fd.downloadFile(courses[course], function(filename) {
 		fc.compareFiles(filename, function(result) {
 			if (!result) {
 				try {fs.unlinkSync('tmp/' + filename + '.csv');} catch (err) {}
-				try {fs.unlinkSync('tmp/new.' + filename);} catch (err) {}
 				try {fs.unlinkSync('tmp/' + filename);} catch (err) {}
 				mv('tmp/new.' + filename, 'tmp/' + filename, {mkdirp: true}, function (err) {
 					if (err) throw err;
