@@ -136,7 +136,6 @@ this.getDates = function(course, content, callback) {
 			item.end = generateDateObject(item.date,item.end,true);
 			delete item.date;
 		}
-		console.log(output);
 		callback(output);
 	})
 }
