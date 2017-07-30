@@ -13,12 +13,12 @@ function updateTitle(title) {
 
 function ISODateString(d) {
  function pad(n){return n<10 ? '0'+n : n}
- return d.getFullYear()+'-'
-      + pad(d.getMonth()+1)+'-'
-      + pad(d.getDate())+'T'
-      + pad(d.getHours())+':'
-      + pad(d.getMinutes())+':'
-      + pad(d.getSeconds())+'Z'}
+ return d.getUTCFullYear()+'-'
+      + pad(d.getUTCMonth()+1)+'-'
+      + pad(d.getUTCDate())+'T'
+      + pad(d.getUTCHours())+':'
+      + pad(d.getUTCMinutes())+':'
+      + pad(d.getUTCSeconds())+'Z'}
 
 function generateDateObject(date, time, end) {
 	var year = date.substring(0, 4);
@@ -31,7 +31,7 @@ function generateDateObject(date, time, end) {
 		var minute = split[1];
 		date = new Date(year, month, day, hour, minute);
 	} else if (end) {
-		date.setDate(date.getDate() + 1);
+		date.setDate(date.getDate() + 86400000);
 	}
 	return ISODateString(date);
 }
