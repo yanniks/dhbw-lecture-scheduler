@@ -10,12 +10,13 @@
   "dependencies": {
     "chai": "^3.5.0",
     "csv": "^1.1.1",
+    "express": "^4.16.2",
     "https": "^1.0.0",
+    "ical-generator": "^0.2.10",
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.13",
     "mv": "^2.1.1",
-    "protobufjs": "^6.8.0",
-    "socket.io": "^1.7.3"
+    "protobufjs": "^6.8.0"
   },
   "devDependencies": {
     "mocha": "^3.2.0"
