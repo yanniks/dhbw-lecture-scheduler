@@ -4,7 +4,7 @@ export function getProf(title, course) {
         return null;
     }
     try {
-        const profs = require("../lecturers/profs_" + course + ".json");
+        const profs = require("../../lecturers/profs_" + course + ".json");
         return profs[title.trim()];
     } catch (ex) {
         return null;
