@@ -1,0 +1,22 @@
+{
+  "wwi2015a": {
+    "title": "WWI2015A",
+    "room": "Raum 3.14",
+    "url": "https://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Wenger/Vorlesungsplan_WWI2015A_5Sem.pdf"
+  },
+  "wwi2016a": {
+    "title": "WWI2016A",
+    "room": "Raum 4.10",
+    "url": "https://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Wenger/Vorlesungsplan_2016A_4Sem.pdf"
+  },
+  "wwi2016b": {
+    "title": "WWI2016B",
+    "room": "Raum 4.11",
+    "url": "https://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Straub/Vorlesungsplan_2016B_4Sem.pdf"
+  },
+  "wwi2017a": {
+    "title": "WWI107A",
+    "room": "Raum 4.12",
+    "url": "https://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Wenger/Vorlesungsplan_WWI2017A_1Sem.pdf"
+  }
+}

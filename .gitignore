@@ -62,7 +62,7 @@ typings/
 
 # DHBW files
 *.pdf
-*.json
+lecturers/*.json
 *.csv
 
 dist/*
