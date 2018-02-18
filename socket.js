@@ -4,7 +4,7 @@ this.createSocket = function() {
 	var jsonCourses = {"wwi2016a":{"title":"WWI2016A"}, "wwi2015a":{"title":"WWI2015A"}};
 	var pl = require('./parseLectureSchedule/parseLectures.js');
 	var app = express();
-	console.log("Created!");
+	
 	app.get('/lectures', function (req, res) {
 		var data = req.query.course;
 		console.log("Received " + data);

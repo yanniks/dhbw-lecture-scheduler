@@ -1,5 +1,5 @@
 var fd = require('./fileDownload.js'), fc = require('./fileComparison.js'), fs = require('fs'), gd = require('./getDates.js'), exec = require('child_process').exec, mv = require('mv');
-var courses = { wwi2016a: "https://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Wenger/Vorlesungsplan_2016A_4Sem.pdf", wwi2015a: "http://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Wenger/Vorlesungsplan_WWI2015A_4Sem.pdf" };
+var courses = { wwi2016a: "https://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Wenger/Vorlesungsplan_2016A_4Sem.pdf", wwi2015a: "https://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Wenger/Vorlesungsplan_WWI2015A_5Sem.pdf" };
 
 this.parseLectures = function(course, callback) {
 	try {fs.unlinkSync('tmp/new.' + filename);} catch (err) {}
