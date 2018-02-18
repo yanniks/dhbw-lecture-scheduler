@@ -64,3 +64,5 @@ typings/
 *.pdf
 *.json
 *.csv
+
+dist/*

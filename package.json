@@ -2,7 +2,7 @@
   "name": "dhbw-lecture-scheduler",
   "version": "0.0.2",
   "description": "Provides the lecture schedule for more and more courses as Google Protobuf for mobile usage\"",
-  "main": "index.js",
+  "main": "dist/index.js",
   "directories": {
     "example": "examples",
     "test": "test"
@@ -15,13 +15,18 @@
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.13",
     "mv": "^2.1.1",
-    "protobufjs": "^6.8.0"
+    "protobufjs": "^6.8.0",
+    "tslint": "^5.9.1",
+    "typescript": "^2.6.2"
   },
   "devDependencies": {
     "mocha": "^3.2.0"
   },
   "scripts": {
-    "test": "mocha"
+    "start": "npm run build && npm run serve",
+    "build": "tslint -c tslint.json -p tsconfig.json && tsc",
+    "test": "mocha",
+    "serve": "node dist/index.js"
   },
   "repository": {
     "type": "git",
