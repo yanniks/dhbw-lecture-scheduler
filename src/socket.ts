@@ -2,6 +2,7 @@ import * as express from "express";
 
 const app = express();
 
+import {generateIcal} from "./ical_support";
 import {parseLectures} from "./parseLectureSchedule/parseLectures";
 import {generateProtobufCourseList, generateProtobufForCourse} from "./protobuf";
 
@@ -22,23 +23,7 @@ export function createSocket() {
                     res.type("application/json");
                     res.send(JSON.stringify(lectures));
                 } else {
-                    res.type("text/calendar");
-                    let ical = "BEGIN:VCALENDAR\nVERSION:2.0\n";
-                    ical += "X-WR-CALNAME:Vorlesungsplan " + jsonCourses[data].title + "\n";
-                    lectures.forEach((event) => {
-                        ical += "BEGIN:VEVENT\n";
-                        ical += "SUMMARY:" + event.title + "\n";
-                        ical += "DTSTART:" + event.begin.replace(/-/g, "").replace(/:/g, "") + "\n";
-                        ical += "DTEND:" + event.end.replace(/-/g, "").replace(/:/g, "") + "\n";
-                        ical += "LOCATION:" + event.location + "\n";
-                        if (event.prof) {
-                            ical += "ORGANIZER;CN=\"" + event.prof + "\"";
-                        }
-                        ical += "STATUS:CONFIRMED\n";
-                        ical += "END:VEVENT\n";
-                    });
-                    ical += "END:VCALENDAR\n";
-                    res.send(ical);
+                    generateIcal(lectures, jsonCourses[data].title, res);
                 }
             });
             return;
