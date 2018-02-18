@@ -10,10 +10,11 @@ export function createSocket() {
     const jsonCourses = require("../courses.json");
 
     app.get("/lectures", (req, res) => {
-        const data = req.query.course;
-        console.log("Received " + data);
-        if (jsonCourses[data]) {
-            parseLectures(data, (lectures) => {
+        const course = req.query.course;
+        const key = req.query.key;
+        console.log("Received " + course);
+        if (jsonCourses[course] || key) {
+            parseLectures(course, key, (lectures) => {
                 if (req.get("Accept") === "application/protobuf") {
                     generateProtobufForCourse(lectures, (protocolBuffer) => {
                         res.type("application/protobuf");
@@ -23,7 +24,7 @@ export function createSocket() {
                     res.type("application/json");
                     res.send(JSON.stringify(lectures));
                 } else {
-                    generateIcal(lectures, jsonCourses[data].title, res);
+                    generateIcal(lectures, jsonCourses[course] ? jsonCourses[course].title : "", res);
                 }
             });
             return;

@@ -2,7 +2,7 @@ import * as moment from "moment-timezone";
 import { createDay } from "./createDay";
 import { getProf } from "./getProf";
 
-interface ILecture {
+export interface ILecture {
     date?: any;
     begin?: string;
     end?: string;
@@ -21,7 +21,7 @@ function updateTitle(title) {
     return appointment;
 }
 
-function generateDateObject(date, time, end) {
+export function generateDateObject(date, time, end) {
     const year = date.substring(0, 4);
     const month = date.substring(4, 6);
     const day = date.substring(6, 8);
