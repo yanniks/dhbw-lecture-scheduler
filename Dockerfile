@@ -3,7 +3,7 @@ FROM finanzcheck/docker-node-java
 COPY . /dhbw/
 RUN mkdir /dhbw/tmp && \
   chmod +x /dhbw/dhbw-run && \
-  bash -c "cd /dhbw && npm install"
+  bash -c "cd /dhbw && npm install && npm run build"
 
 EXPOSE 3000
 
