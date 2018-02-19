@@ -1,35 +1,31 @@
 {
-    "extends": "tslint:recommended",
-    "linterOptions": {
-        "exclude": [
-            "src/protos/**",
-            "**/*.js"
-        ]
-    },
-    "rules": {
-        "max-line-length": {
-            "options": [120]
-        },
-        "new-parens": true,
-        "no-arg": true,
-        "no-bitwise": true,
-        "no-conditional-assignment": true,
-        "no-consecutive-blank-lines": false,
-        "no-console": {
-            "severity": "warning",
-            "options": [
-                "debug",
-                "info",
-                "log",
-                "time",
-                "timeEnd",
-                "trace"
-            ]
-        }
-    },
-    "jsRules": {
-        "max-line-length": {
-            "options": [120]
-        }
+  "extends": "tslint:recommended",
+  "linterOptions": {
+    "exclude": [
+      "src/protos/**",
+      "**/*.js"
+    ]
+  },
+  "rules": {
+    "max-line-length": [true, 120],
+    "new-parens": true,
+    "no-arg": true,
+    "no-bitwise": true,
+    "no-conditional-assignment": true,
+    "no-consecutive-blank-lines": false,
+    "no-console": {
+      "severity": "warning",
+      "options": [
+        "debug",
+        "info",
+        "log",
+        "time",
+        "timeEnd",
+        "trace"
+      ]
     }
+  },
+  "jsRules": {
+    "max-line-length": [true, 120]
+  }
 }

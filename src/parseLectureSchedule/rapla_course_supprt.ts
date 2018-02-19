@@ -3,9 +3,7 @@ import {generateDateObject, ILecture} from "./getDates";
 
 export function getFileContent(key: string, callback: any) {
     const url = "https://rapla.dhbw-stuttgart.de/rapla?key=" + key;
-    JSDOM.fromURL(url).then((dom) => {
-        parseDOM(dom, callback);
-    });
+    JSDOM.fromURL(url).then((dom) => parseDOM(dom, callback));
 }
 
 function parseDOM(dom: any, callback: any) {
