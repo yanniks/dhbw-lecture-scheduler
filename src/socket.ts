@@ -6,10 +6,9 @@ import {generateIcal} from "./ical_support";
 import {parseLectures} from "./parseLectureSchedule/parseLectures";
 import {generateProtobufCourseList, generateProtobufForCourse} from "./protobuf";
 
-function sendLectures(req, res) {
+function sendLectures(course, req, res) {
     const jsonCourses = require("../courses.json");
 
-    const course = req.query.course;
     const key = req.query.key;
 
     console.log("Received " + course);
@@ -48,7 +47,8 @@ function sendCourseList(req, res) {
 }
 
 export function createSocket() {
-    app.get("/lectures", sendLectures);
+    app.get("/lectures", (req, res) => sendLectures(req.query.course, req, res));
+    app.get("/lectures/:course", (req, res) => sendLectures(req.params.course, req, res));
     app.get("/courses", sendCourseList);
     app.listen(process.env.PORT || 3000, () => {
         console.log("dhbw-lecture-scheduler listening on port " + (process.env.PORT || 3000) + "!");
