@@ -2,8 +2,23 @@ import {JSDOM} from "jsdom";
 import {generateDateObject, ILecture} from "./getDates";
 
 export function getFileContent(key: string, callback: any) {
-    const url = "https://rapla.dhbw-stuttgart.de/rapla?key=" + key;
-    JSDOM.fromURL(url).then((dom) => parseDOM(dom, callback));
+    const date = getNextLectureDate();
+    let url = "https://rapla.dhbw-stuttgart.de/rapla?key=" + key;
+    // JS months go from 0-11, not 1-12
+    url += "&day=" + date.getDate() + "&month=" + (date.getMonth() + 1) + "&year=" + date.getFullYear();
+    JSDOM.fromURL(url).then((dom, err) => parseDOM(dom, callback));
+}
+
+function getNextLectureDate(): Date {
+    const date = new Date();
+    if (date.getDay() === 0) {
+        // Sunday, add one day
+        date.setDate(date.getDate() + 1);
+    } else if (date.getDay() === 6) {
+        // Saturday, add two days
+        date.setDate(date.getDate() + 2);
+    }
+    return date;
 }
 
 function parseDOM(dom: any, callback: any) {
@@ -21,7 +36,9 @@ function parseDOM(dom: any, callback: any) {
 
         lecture.location = text.split("Ressourcen:\n")[1].split("\n")[0].trim();
 
-        lecture.prof = text.split("Personen:\n")[1].split("\n")[0].trim();
+        if (text.indexOf("Personen:\n") > -1) {
+            lecture.prof = text.split("Personen:\n")[1].split("\n")[0].trim();
+        }
 
         const timeframe = text.split("\n")[1];
         const dateGerman = timeframe.split(" ")[1];
