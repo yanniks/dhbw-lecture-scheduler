@@ -41,9 +41,9 @@ function updateCsv(filename, course) {
     exec("java -Dfile.encoding=UTF-8 -jar " + tabulaPath + " -g -n -o tmp/" + course + ".csv tmp/" + filename,
         (error, stdout, stderr) => {
             if (!error) {
-                console.log("Updated " + course);
+                console.info("Updated " + course);
             } else {
-                console.log("An error occurred while updating " + course);
+                console.error("An error occurred while updating " + course);
             }
         });
 }

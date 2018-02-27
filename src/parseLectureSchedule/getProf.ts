@@ -1,6 +1,6 @@
 export function getProf(title, course) {
     if (!course) {
-        console.log(title);
+        console.error("Could not get lecturer for " + title);
         return null;
     }
     try {

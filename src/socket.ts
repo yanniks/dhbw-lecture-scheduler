@@ -11,7 +11,7 @@ function sendLectures(course, req, res) {
 
     const key = req.query.key;
 
-    console.log("Received " + (course || key));
+    console.error("Received " + (key || course));
     if (jsonCourses[course] || key) {
         parseLectures(course, key, (lectures) => {
             if (req.get("Accept") === "application/protobuf") {
@@ -51,6 +51,6 @@ export function createSocket() {
     app.get("/lectures/:course", (req, res) => sendLectures(req.params.course, req, res));
     app.get("/courses", sendCourseList);
     app.listen(process.env.PORT || 3000, () => {
-        console.log("dhbw-lecture-scheduler listening on port " + (process.env.PORT || 3000) + "!");
+        console.info("dhbw-lecture-scheduler listening on port " + (process.env.PORT || 3000) + "!");
     });
 }
