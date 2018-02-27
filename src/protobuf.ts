@@ -26,7 +26,7 @@ export function generateProtobufCourseList(json, callback) {
     // Create a new message
 
     const coursesArray = [];
-    json.forEach ((key) => {
+    Object.keys(json).forEach ((key) => {
         const protobufObject = Course.create({id: key, title: json[key].title});
         coursesArray.push(protobufObject);
     });
