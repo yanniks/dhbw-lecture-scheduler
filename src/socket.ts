@@ -11,7 +11,7 @@ function sendLectures(course, req, res) {
 
     const key = req.query.key;
 
-    console.error("Received " + (key || course));
+    console.info("Received " + (key || course));
     if (jsonCourses[course] || key) {
         parseLectures(course, key, (lectures) => {
             if (req.get("Accept") === "application/protobuf") {
