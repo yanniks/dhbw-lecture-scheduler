@@ -2,6 +2,7 @@ import * as express from "express";
 
 const app = express();
 
+import * as path from "path";
 import {generateIcal} from "./ical_support";
 import {parseLectures} from "./parseLectureSchedule/parseLectures";
 import {generateProtobufCourseList, generateProtobufForCourse} from "./protobuf";
@@ -47,6 +48,7 @@ function sendCourseList(req, res) {
 }
 
 export function createSocket() {
+    app.use(express.static("ui"));
     app.get("/lectures", (req, res) => sendLectures(req.query.course, req, res));
     app.get("/lectures/:course", (req, res) => sendLectures(req.params.course, req, res));
     app.get("/courses", sendCourseList);
