@@ -9,8 +9,8 @@ export function generateIcal(lectures: any, courseTitle: string, res: any) {
         const end = event.end.replace(/-/g, "").replace(/:/g, "") + "\n";
         if (begin.substring(8, 16) === "T220000Z" && end.substring(8, 16) === "T220000Z") {
             // Seems like a whole-day event
-            ical += "DTSTART;VALUE=DATE:" + begin.substring(0, 8) + "\n";
-            ical += "DTEND;VALUE=DATE:" + begin.substring(0, 8) + "\n";
+            ical += "DTSTART;VALUE=DATE:" + end.substring(0, 8) + "\n";
+            ical += "DTEND;VALUE=DATE:" + end.substring(0, 8) + "\n";
         } else {
             ical += "DTSTART:" + begin;
             ical += "DTEND:" + end;
