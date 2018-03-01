@@ -139,7 +139,7 @@ export function getDates(course, content, callback) {
                 }
                 if (loc) {
                     ap.location = loc;
-                } else {
+                } else if (ap.begin) {
                     ap.location = courses[course].room;
                 }
                 output.push(ap);

@@ -15,7 +15,9 @@ export function generateIcal(lectures: any, courseTitle: string, res: any) {
             ical += "DTSTART:" + begin;
             ical += "DTEND:" + end;
         }
-        ical += "LOCATION:" + event.location + "\n";
+        if (event.location) {
+            ical += "LOCATION:" + event.location + "\n";
+        }
         if (event.prof) {
             ical += "ORGANIZER;CN=\"" + event.prof + "\"\n";
         }
