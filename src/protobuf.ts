@@ -9,6 +9,7 @@ export function generateProtobufForCourse(json, callback) {
     // Create a new message
     const lecturesArray = [];
     json.forEach((lect) => {
+        lect.prof = lect.prof.join(", ");
         const protobufObject = Lecture.create(lect);
         lecturesArray.push(protobufObject);
     });

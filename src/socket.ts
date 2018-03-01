@@ -2,7 +2,6 @@ import * as express from "express";
 
 const app = express();
 
-import * as path from "path";
 import {generateIcal} from "./ical_support";
 import {parseLectures} from "./parseLectureSchedule/parseLectures";
 import {generateProtobufCourseList, generateProtobufForCourse} from "./protobuf";
@@ -12,9 +11,10 @@ function sendLectures(course, req, res) {
 
     const key = req.query.key;
 
+    console.log(req.headers);
     console.info("Received " + (key || course));
     if (jsonCourses[course] || key) {
-        parseLectures(course, key, (lectures) => {
+        parseLectures(course, key, req.headers["accept-language"] || "de-de", (lectures) => {
             if (req.get("Accept") === "application/protobuf") {
                 generateProtobufForCourse(lectures, (protocolBuffer) => {
                     res.type("application/protobuf");

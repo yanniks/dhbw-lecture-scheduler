@@ -1,29 +1,41 @@
+import {isMidnight} from "./parseLectureSchedule/getDates";
+
+// https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
+function hashCode(str) {
+    return str.split("").reduce((prevHash, currVal) =>
+        ((prevHash << 5) - prevHash) + currVal.charCodeAt(0), 0);
+}
+
 export function generateIcal(lectures: any, courseTitle: string, res: any) {
     res.type("text/calendar");
-    let ical = "BEGIN:VCALENDAR\nVERSION:2.0\n";
-    ical += "X-WR-CALNAME:Vorlesungsplan " + courseTitle + "\n";
+    let ical = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\n";
+    ical += "PRODID:-//Yannik Ehlert//LectureSchedule" + courseTitle + "\r\n";
+    ical += "X-WR-CALNAME:Vorlesungsplan " + courseTitle + "\r\n";
     lectures.forEach((event) => {
-        ical += "BEGIN:VEVENT\n";
-        ical += "SUMMARY:" + event.title + "\n";
-        const begin = event.begin.replace(/-/g, "").replace(/:/g, "") + "\n";
-        const end = event.end.replace(/-/g, "").replace(/:/g, "") + "\n";
-        if (begin.substring(8, 16) === "T220000Z" && end.substring(8, 16) === "T220000Z") {
+        ical += "BEGIN:VEVENT\r\n";
+        ical += "SUMMARY:" + event.title + "\r\n";
+        const begin = event.begin.replace(/-/g, "").replace(/:/g, "") + "\r\n";
+        const end = event.end.replace(/-/g, "").replace(/:/g, "") + "\r\n";
+        if (isMidnight(event.begin) && isMidnight(event.end)) {
             // Seems like a whole-day event
-            ical += "DTSTART;VALUE=DATE:" + end.substring(0, 8) + "\n";
-            ical += "DTEND;VALUE=DATE:" + end.substring(0, 8) + "\n";
+            ical += "DTSTART;VALUE=DATE:" + end.substring(0, 8) + "\r\n";
+            ical += "DTEND;VALUE=DATE:" + end.substring(0, 8) + "\r\n";
         } else {
             ical += "DTSTART:" + begin;
             ical += "DTEND:" + end;
         }
         if (event.location) {
-            ical += "LOCATION:" + event.location + "\n";
+            ical += "LOCATION:" + event.location.replace(/,/g, "\\,") + "\r\n";
         }
-        if (event.prof) {
-            ical += "ORGANIZER;CN=\"" + event.prof + "\"\n";
-        }
-        ical += "STATUS:CONFIRMED\n";
-        ical += "END:VEVENT\n";
+        event.prof.forEach((lecturer) => {
+            ical += "ATTENDEE;CUTYPE=INDIVIDUAL\n ;PARTSTAT=ACCEPTED\r\n ;ROLE=CHAIR\r\n ;CN="
+                + lecturer + ":X-PID:" + hashCode(lecturer.split(" ").join("").toLowerCase())
+                + "\r\n";
+        });
+        ical += "UID:" + hashCode(begin + end) + "\r\n";
+        ical += "STATUS:CONFIRMED\r\n";
+        ical += "END:VEVENT\r\n";
     });
-    ical += "END:VCALENDAR\n";
+    ical += "END:VCALENDAR\r\n";
     res.send(ical);
 }

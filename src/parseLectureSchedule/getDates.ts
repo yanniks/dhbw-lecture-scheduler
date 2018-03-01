@@ -1,12 +1,12 @@
 import * as moment from "moment-timezone";
-import { createDay } from "./createDay";
-import { getProf } from "./getProf";
+import {createDay} from "./createDay";
+import {getProf} from "./getProf";
 
 export interface ILecture {
     date?: any;
     begin?: string;
     end?: string;
-    prof?: string;
+    prof?: string[];
     title?: string;
     location?: string;
 }
@@ -19,6 +19,20 @@ function updateTitle(title) {
     let appointment = title.trim();
     appointment = appointment.replace("IuF", "Investition und Finanzierung");
     return appointment;
+}
+
+function getDefaultLocation(course: any, lang: string) {
+    let room = "";
+    if (lang.substring(0, 2) === "de") {
+        room = "Raum ";
+    } else {
+        room = "Room ";
+    }
+    room += course.room;
+    if (course.address) {
+        return room + ", " + course.address;
+    }
+    return room;
 }
 
 export function generateDateObject(date, time, end) {
@@ -40,8 +54,15 @@ export function generateDateObject(date, time, end) {
     return m.format();
 }
 
-export function getDates(course, content, callback) {
+export function isMidnight(date: string): boolean {
+    const m = moment(date);
+    m.tz("Europe/Berlin");
+    return m.get("hour") === 0 && m.get("minute") === 0;
+}
+
+export function getDates(course: any, content: any, lang: string, callback: any) {
     const courses = require("../../courses.json");
+    const defaultRoom = getDefaultLocation(courses[course], lang);
 
     createDay(content, (days) => {
         const output = [];
@@ -98,7 +119,7 @@ export function getDates(course, content, callback) {
                         if (loc) {
                             ap.location = loc;
                         } else {
-                            ap.location = "Raum 4.10";
+                            ap.location = defaultRoom;
                         }
                         output.push(ap);
                     }
@@ -140,7 +161,7 @@ export function getDates(course, content, callback) {
                 if (loc) {
                     ap.location = loc;
                 } else if (ap.begin) {
-                    ap.location = courses[course].room;
+                    ap.location = defaultRoom;
                 }
                 output.push(ap);
             }
