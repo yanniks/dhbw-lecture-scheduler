@@ -1,0 +1,47 @@
+import * as Sequelize from "sequelize";
+
+const sequelize = new Sequelize(process.env.db || "lecturescheduler", process.env.user || "dhbw",
+    process.env.password || "dhbw", {
+        dialect: "mysql",
+        host: process.env.dbhost || "db",
+
+        pool: {
+            acquire: 30000,
+            idle: 10000,
+            max: 5,
+            min: 0,
+        },
+
+        // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
+        operatorsAliases: false,
+    });
+
+sequelize
+    .authenticate()
+    .then(() => {
+        console.info("Connection has been established successfully.");
+    })
+    .catch((err) => {
+        console.error("Unable to connect to the database:", err);
+    });
+
+const LectureRequest = sequelize.define("request", {
+        ipAddress: {
+            type: Sequelize.STRING,
+        },
+        requestIdentifier: {
+            type: Sequelize.STRING,
+        },
+        userAgent: {
+            type: Sequelize.STRING,
+        },
+    },
+    {
+        timestamps: true,
+    });
+
+LectureRequest.sync({force: false});
+
+export function documentRequest(identifier: string, ipAddress: string, userAgent: string) {
+    LectureRequest.create({ipAddress, requestIdentifier: identifier, userAgent});
+}
