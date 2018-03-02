@@ -40,8 +40,28 @@ const LectureRequest = sequelize.define("request", {
         timestamps: true,
     });
 
+const PushToken = sequelize.define("pushtoken", {
+    requestIdentifier: {
+        type: Sequelize.STRING,
+    },
+    token: {
+        type: Sequelize.STRING,
+    },
+});
+
 LectureRequest.sync({force: false});
+PushToken.sync({force: false});
 
 export function documentRequest(identifier: string, ipAddress: string, userAgent: string) {
     LectureRequest.create({ipAddress, requestIdentifier: identifier, userAgent});
+}
+
+export function registerPushToken(identifier: string, token: string) {
+    PushToken.findOrCreate({requestIdentifier: identifier, token});
+}
+
+export function deleteStoredPushToken(identifier: string, token: string) {
+    PushToken.findOne({requestIdentifier: identifier, token}).then((pushToken) => {
+        pushToken.destroy();
+    });
 }

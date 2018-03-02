@@ -2,7 +2,7 @@ import * as express from "express";
 
 const app = express();
 
-import {documentRequest} from "./database_support";
+import {deleteStoredPushToken, documentRequest, registerPushToken} from "./database_support";
 import {generateIcal} from "./ical_support";
 import {parseLectures} from "./parseLectureSchedule/parseLectures";
 import {generateProtobufCourseList, generateProtobufForCourse} from "./protobuf";
@@ -11,6 +11,11 @@ function sendLectures(course, req, res) {
     const jsonCourses = require("../courses.json");
 
     const key = req.query.key;
+
+    if (req.headers["x-push-token"]) {
+        const pushToken = req.headers["x-push-token"];
+        registerPushToken(key || course, pushToken);
+    }
 
     if (jsonCourses[course] || key) {
         parseLectures(course, key, req.headers["accept-language"] || "de-de", (lectures) => {
@@ -47,9 +52,19 @@ function sendCourseList(req, res) {
     }
 }
 
+function deletePushToken(req, res) {
+    if (req.headers["x-push-token"]) {
+        const pushToken = req.headers["x-push-token"];
+        deleteStoredPushToken(req.params.course, pushToken);
+    }
+    res.type("application/json");
+    res.send(JSON.stringify({success: true}));
+}
+
 export function createSocket() {
     app.use(express.static("ui"));
     app.get("/lectures", (req, res) => sendLectures(req.query.course, req, res));
+    app.delete("/lectures/:course", deletePushToken);
     app.get("/lectures/:course", (req, res) => sendLectures(req.params.course, req, res));
     app.get("/courses", sendCourseList);
     app.listen(process.env.PORT || 3000, () => {
