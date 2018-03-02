@@ -57,7 +57,7 @@ export function documentRequest(identifier: string, ipAddress: string, userAgent
 }
 
 export function registerPushToken(identifier: string, token: string) {
-    PushToken.findOrCreate({requestIdentifier: identifier, token});
+    PushToken.findOrCreate({where: {requestIdentifier: identifier, token}});
 }
 
 export function deleteStoredPushToken(identifier: string, token: string) {
