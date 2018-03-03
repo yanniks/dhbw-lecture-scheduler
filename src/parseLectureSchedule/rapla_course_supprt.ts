@@ -38,13 +38,13 @@ function parseDOM(dom: any, callback: any) {
 
         lecture.prof = [];
         if (text.indexOf("Personen:\n") > -1) {
-            const participants = text.split("Personen:\n")[1].split("\n")[0].trim().split(",");
+            const participant = text.split("Personen:\n")[1].split("\n")[0].trim();
 
-            participants.forEach((participant) => {
-                if (participant.trim()) {
-                    lecture.prof.push(participant.trim());
-                }
-            });
+            if (participant.substring(participant.length - 1, participant.length) === ",") {
+                lecture.prof.push(participant.substring(0, participant.length - 1));
+            } else {
+                lecture.prof.push(participant);
+            }
         }
 
         const timeframe = text.split("\n")[1];
