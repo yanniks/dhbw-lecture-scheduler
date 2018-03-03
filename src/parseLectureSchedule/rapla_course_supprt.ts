@@ -36,8 +36,15 @@ function parseDOM(dom: any, callback: any) {
 
         lecture.location = text.split("Ressourcen:\n")[1].split("\n")[0].trim();
 
+        lecture.prof = [];
         if (text.indexOf("Personen:\n") > -1) {
-            lecture.prof = text.split("Personen:\n")[1].split("\n")[0].trim();
+            const participants = text.split("Personen:\n")[1].split("\n")[0].trim().split(",");
+
+            participants.forEach((participant) => {
+                if (participant.trim()) {
+                    lecture.prof.push(participant.trim());
+                }
+            });
         }
 
         const timeframe = text.split("\n")[1];
