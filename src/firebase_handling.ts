@@ -16,7 +16,13 @@ export function sendNotificationsForCourse(course: string) {
                 },
                 token: token.token,
             };
-            admin.messaging.send(message);
+            admin.messaging().send(message)
+                .then((response) => {
+                    return;
+                })
+                .catch((error) => {
+                    console.error("Could not send push notification.", error);
+                });
         });
     });
 }
