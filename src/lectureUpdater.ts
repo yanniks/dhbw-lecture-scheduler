@@ -3,8 +3,9 @@
 import {exec} from "child_process";
 import * as fs from "fs";
 import * as mv from "mv";
-import { compareFiles } from "./parseLectureSchedule/fileComparison";
-import { downloadFile } from "./parseLectureSchedule/fileDownload";
+import {sendNotificationsForCourse} from "./firebase_handling";
+import {compareFiles} from "./parseLectureSchedule/fileComparison";
+import {downloadFile} from "./parseLectureSchedule/fileDownload";
 
 // 30 Minutes
 const updateInterval = 1800000;
@@ -42,6 +43,7 @@ function updateCsv(filename, course) {
         (error, stdout, stderr) => {
             if (!error) {
                 console.info("Updated " + course);
+                sendNotificationsForCourse(course);
             } else {
                 console.error("An error occurred while updating " + course);
             }
@@ -50,8 +52,8 @@ function updateCsv(filename, course) {
 
 export function updateLecturesPeriodically() {
     const courses = require("../courses.json");
-    Object.keys(courses).forEach(((course) => {
+    Object.keys(courses).forEach((course) => {
         updateLectures(course, courses[course].url);
-    }));
+    });
     setTimeout(updateLecturesPeriodically, updateInterval);
 }

@@ -60,6 +60,10 @@ export function registerPushToken(identifier: string, token: string) {
     PushToken.findOrCreate({where: {requestIdentifier: identifier, token}});
 }
 
+export function getPushTokens(identifier: string, callback: any) {
+    PushToken.findAll({where: {requestIdentifier: identifier}}).then(callback);
+}
+
 export function deleteStoredPushToken(identifier: string, token: string) {
     PushToken.findOne({requestIdentifier: identifier, token}).then((pushToken) => {
         pushToken.destroy();
