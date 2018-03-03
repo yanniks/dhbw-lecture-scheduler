@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import {getPushTokens} from "./database_support";
 
 export function sendNotificationsForCourse(course: string) {
-    const serviceAccount = require("private/firebaseadminsdk.json");
+    const serviceAccount = require("../private/firebaseadminsdk.json");
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
         databaseURL: "https://dhbw-lecture-scheduler.firebaseio.com",
