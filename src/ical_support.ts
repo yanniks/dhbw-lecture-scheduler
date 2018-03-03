@@ -27,7 +27,7 @@ export function generateIcal(lectures: any, courseTitle: string, res: any) {
         if (event.location) {
             ical += "LOCATION:" + event.location.replace(/,/g, "\\,") + "\r\n";
         }
-        event.prof.forEach((lecturer) => {
+        (event.prof || []).forEach((lecturer) => {
             ical += "ATTENDEE;CUTYPE=INDIVIDUAL\n ;PARTSTAT=ACCEPTED\r\n ;ROLE=CHAIR\r\n ;CN="
                 + lecturer + ":X-PID:" + hashCode(lecturer.split(" ").join("").toLowerCase())
                 + "\r\n";
