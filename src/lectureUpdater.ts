@@ -50,10 +50,24 @@ function updateCsv(filename, course) {
         });
 }
 
-export function updateLecturesPeriodically() {
+function periodicalUpdateJob() {
     const courses = require("../courses.json");
     Object.keys(courses).forEach((course) => {
         updateLectures(course, courses[course].url);
     });
     setTimeout(updateLecturesPeriodically, updateInterval);
+}
+
+function sendUpdatesToAllDevices() {
+    // The service might be restarted because of feature improvements.
+    // Therefore, let the Android devices pull an update after restart.
+    const courses = require("../courses.json");
+    Object.keys(courses).forEach((course) => {
+        sendNotificationsForCourse(course);
+    });
+}
+
+export function updateLecturesPeriodically() {
+    sendUpdatesToAllDevices();
+    periodicalUpdateJob();
 }
