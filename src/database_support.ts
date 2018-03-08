@@ -56,6 +56,12 @@ export function documentRequest(identifier: string, ipAddress: string, userAgent
     LectureRequest.create({ipAddress, requestIdentifier: identifier, userAgent});
 }
 
+export function unregisterToken(token: string) {
+    PushToken.findOne({token}).then((pushToken) => {
+        pushToken.destroy();
+    });
+}
+
 export function registerPushToken(identifier: string, token: string) {
     PushToken.findOrCreate({where: {requestIdentifier: identifier, token}});
 }

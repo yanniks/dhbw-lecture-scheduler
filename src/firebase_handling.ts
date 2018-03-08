@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import {getPushTokens} from "./database_support";
+import {getPushTokens, unregisterToken} from "./database_support";
 
 admin.initializeApp({
     credential: admin.credential.cert(require("../private/firebaseadminsdk.json")),
@@ -21,6 +21,9 @@ export function sendNotificationsForCourse(course: string) {
                 })
                 .catch((error) => {
                     console.error("Could not send push notification.", error);
+                    if (error.code === "messaging/registration-token-not-registered") {
+                        unregisterToken(token);
+                    }
                 });
         });
     });

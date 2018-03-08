@@ -55,7 +55,7 @@ function periodicalUpdateJob() {
     Object.keys(courses).forEach((course) => {
         updateLectures(course, courses[course].url);
     });
-    setTimeout(updateLecturesPeriodically, updateInterval);
+    setTimeout(periodicalUpdateJob, updateInterval);
 }
 
 function sendUpdatesToAllDevices() {
