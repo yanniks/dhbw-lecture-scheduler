@@ -21,13 +21,16 @@ function updateTitle(title) {
     return appointment;
 }
 
-function getDefaultLocation(course: any, lang: string) {
-    let room = "";
+function getRoomLocalized(lang: string) {
     if (lang.substring(0, 2) === "de") {
-        room = "Raum ";
+        return "Raum ";
     } else {
-        room = "Room ";
+        return "Room ";
     }
+}
+
+function getDefaultLocation(course: any, lang: string) {
+    let room = getRoomLocalized(lang);
     room += course.room;
     if (course.address) {
         return room + ", " + course.address;
@@ -134,15 +137,9 @@ export function getDates(course: any, content: any, lang: string, callback: any)
                         });
                     }
                     timeframe = line;
-                } else if (line.includes("Raum ") || line.includes("R. ") || line.includes("P50 ")) {
-                    loc = line;
-                } else if (line !== "" && !line.includes("Woche ")) {
-                    if (line[line.length - 1] === "-") {
-                        line = line.substr(0, line.length - 1);
-                        appointment += line;
-                    } else {
-                        appointment += line + " ";
-                    }
+                } else {
+                    appointment += lineToAppointmentTitle(line);
+                    loc = getLocationFromLine(lang, line) || loc;
                 }
             });
             if (appointment !== "") {
@@ -174,4 +171,33 @@ export function getDates(course: any, content: any, lang: string, callback: any)
         });
         callback(output);
     });
+}
+
+function lineToAppointmentTitle(line: string) {
+    if (line !== "" && line.indexOf("Woche ") === -1) {
+        if (line[line.length - 1] === "-") {
+            line = line.substr(0, line.length - 1).replace(/\S*Raum?(.*)\S*/, "").trim();
+            return line;
+        } else {
+            return line.replace(/\S*Raum?(.*)\S*/, "").trim() + " ";
+        }
+    }
+    return "";
+}
+
+function getLocationFromLine(lang: string, line: string) {
+    if (line.indexOf("Raum") > -1) {
+        let roomInfo = line.split("Raum")[1].trim();
+        if (roomInfo.substring(0, 1) === ":") {
+            roomInfo = roomInfo.substring(1, roomInfo.length);
+        }
+        return getRoomLocalized(lang) + roomInfo.trim();
+    }
+    if (line.indexOf("R. ") > -1) {
+        return getRoomLocalized(lang) + " " + line.split("R. ")[1].trim();
+    }
+    if (line.indexOf("P50") > -1) {
+        return "P50" + line.split("P50")[1];
+    }
+    return null;
 }
