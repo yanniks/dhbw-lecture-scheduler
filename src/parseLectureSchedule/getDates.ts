@@ -200,7 +200,7 @@ function getLocationFromLine(lang: string, line: string) {
         return getRoomLocalized(lang) + roomInfo.trim();
     }
     if (line.indexOf("R. ") > -1) {
-        return getRoomLocalized(lang) + " " + line.split("R. ")[1].trim();
+        return getRoomLocalized(lang) + line.split("R. ")[1].trim();
     }
     if (line.indexOf("P50") > -1) {
         return "P50" + line.split("P50")[1];
