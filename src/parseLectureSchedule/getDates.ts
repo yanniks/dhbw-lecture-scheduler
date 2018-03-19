@@ -179,13 +179,13 @@ function lineToAppointmentTitle(line: string) {
             line = line.substr(0, line.length - 1)
                 .replace(/\S*Raum?(.*)\S*/, "")
                 .replace(/\S*P50?(.*)\S*/, "")
-                .replace(/\S*R.?(.*)\S*/, "").trim();
+                .replace(/\S*R\..*\S*/, "").trim();
             return line;
         } else {
             return line
                 .replace(/\S*Raum?(.*)\S*/, "")
                 .replace(/\S*P50?(.*)\S*/, "")
-                .replace(/\S*R.?(.*)\S*/, "").trim() + " ";
+                .replace(/\S*R\..*\S*/, "").trim() + " ";
         }
     }
     return "";
