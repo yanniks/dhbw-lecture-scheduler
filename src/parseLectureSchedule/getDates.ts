@@ -176,10 +176,16 @@ export function getDates(course: any, content: any, lang: string, callback: any)
 function lineToAppointmentTitle(line: string) {
     if (line !== "" && line.indexOf("Woche ") === -1) {
         if (line[line.length - 1] === "-") {
-            line = line.substr(0, line.length - 1).replace(/\S*Raum?(.*)\S*/, "").trim();
+            line = line.substr(0, line.length - 1)
+                .replace(/\S*Raum?(.*)\S*/, "")
+                .replace(/\S*P50?(.*)\S*/, "")
+                .replace(/\S*R.?(.*)\S*/, "").trim();
             return line;
         } else {
-            return line.replace(/\S*Raum?(.*)\S*/, "").trim() + " ";
+            return line
+                .replace(/\S*Raum?(.*)\S*/, "")
+                .replace(/\S*P50?(.*)\S*/, "")
+                .replace(/\S*R.?(.*)\S*/, "").trim() + " ";
         }
     }
     return "";
