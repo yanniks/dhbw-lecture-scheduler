@@ -16,7 +16,13 @@ export function parseLectures(course: string, key: string, lang: string, callbac
 }
 
 export function lastUpdatedDate(course: string, callback: any) {
+    if (!course) {
+        return callback(null);
+    }
     fs.stat("tmp/" + course + ".csv", (err, stats) => {
+        if (err) {
+            return callback(null);
+        }
         const mtime = new Date(util.inspect(stats.mtime));
         callback(mtime);
     });
