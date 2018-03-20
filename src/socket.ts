@@ -4,7 +4,7 @@ const app = express();
 
 import {deleteStoredPushToken, documentRequest, registerPushToken} from "./database_support";
 import {generateIcal} from "./ical_support";
-import {parseLectures} from "./parseLectureSchedule/parseLectures";
+import {lastUpdatedDate, parseLectures} from "./parseLectureSchedule/parseLectures";
 import {generateProtobufCourseList, generateProtobufForCourse} from "./protobuf";
 
 function sendLectures(course, req, res) {
@@ -29,7 +29,9 @@ function sendLectures(course, req, res) {
                 res.type("application/json");
                 res.send(JSON.stringify(lectures));
             } else {
-                generateIcal(lectures, jsonCourses[course] ? jsonCourses[course].title : "", res);
+                lastUpdatedDate(course, (dateChanged: Date) => {
+                    generateIcal(dateChanged, lectures, jsonCourses[course] ? jsonCourses[course].title : "", res);
+                });
             }
         });
         return;

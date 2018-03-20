@@ -1,5 +1,6 @@
 import * as fs from "fs";
-import { getDates } from "./getDates";
+import * as util from "util";
+import {getDates} from "./getDates";
 import {getFileContent} from "./rapla_course_supprt";
 
 export function parseLectures(course: string, key: string, lang: string, callback: any) {
@@ -11,5 +12,12 @@ export function parseLectures(course: string, key: string, lang: string, callbac
         getDates(course, data.toString(), lang, (schedule) => {
             callback(schedule);
         });
+    });
+}
+
+export function lastUpdatedDate(course: string, callback: any) {
+    fs.stat("tmp/" + course + ".csv", (err, stats) => {
+        const mtime = new Date(util.inspect(stats.mtime));
+        callback(mtime);
     });
 }

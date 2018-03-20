@@ -1,3 +1,4 @@
+import moment = require("moment");
 import {isMidnight} from "./parseLectureSchedule/getDates";
 
 // https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
@@ -6,8 +7,14 @@ function hashCode(str) {
         ((prevHash << 5) - prevHash) + currVal.charCodeAt(0), 0);
 }
 
-export function generateIcal(lectures: any, courseTitle: string, res: any) {
+export function generateIcal(dateChanged: Date, lectures: any, courseTitle: string, res: any) {
     res.type("text/calendar");
+
+    const dtstamp = (dateChanged || new Date()).toISOString()
+        .replace(/-/g, "")
+        .replace(/:/g, "")
+        .split(".")[0] + "Z";
+
     let ical = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\n";
     ical += "PRODID:-//Yannik Ehlert//LectureSchedule" + courseTitle + "\r\n";
     ical += "X-WR-CALNAME:Vorlesungsplan " + courseTitle + "\r\n";
@@ -24,11 +31,12 @@ export function generateIcal(lectures: any, courseTitle: string, res: any) {
             ical += "DTSTART:" + begin;
             ical += "DTEND:" + end;
         }
+        ical += "DTSTAMP:" + dtstamp + "\r\n";
         if (event.location) {
             ical += "LOCATION:" + event.location.replace(/,/g, "\\,") + "\r\n";
         }
         (event.prof || []).forEach((lecturer) => {
-            ical += "ATTENDEE;CUTYPE=INDIVIDUAL\n ;PARTSTAT=ACCEPTED\r\n ;ROLE=CHAIR\r\n ;CN="
+            ical += "ATTENDEE;CUTYPE=INDIVIDUAL\r\n ;PARTSTAT=ACCEPTED\r\n ;ROLE=CHAIR\r\n ;CN="
                 + lecturer + ":X-PID:" + hashCode(lecturer.split(" ").join("").toLowerCase())
                 + "\r\n";
         });
