@@ -18,7 +18,7 @@ function checkIfUpdateNeeded(filename, course) {
     compareFiles(filename, course, (result) => {
         if (!result) {
             try {
-                fs.unlinkSync("tmp/" + filename + ".csv");
+                fs.unlinkSync("tmp/" + course + ".csv");
             } catch (err) {
                 console.error(err);
             }
