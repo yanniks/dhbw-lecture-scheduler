@@ -19,6 +19,8 @@
     "moment-timezone": "^0.5.13",
     "mv": "^2.1.1",
     "mysql2": "^1.5.2",
+    "pdf-table-extractor": "^1.0.3",
+    "pdfreader": "^0.2.4",
     "protobufjs": "^6.8.0",
     "sequelize": "^4.35.1",
     "tslint": "^5.9.1",

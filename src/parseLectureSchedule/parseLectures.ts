@@ -8,10 +8,8 @@ export function parseLectures(course: string, key: string, lang: string, callbac
         getFileContent(key, callback);
         return;
     }
-    fs.readFile("tmp/" + course + ".csv", (err, data) => {
-        getDates(course, data.toString(), lang, (schedule) => {
-            callback(schedule);
-        });
+    getDates(course, lang, (schedule) => {
+        callback(schedule);
     });
 }
 

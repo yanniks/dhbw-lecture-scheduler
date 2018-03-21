@@ -1,75 +1,47 @@
-import * as csv from "csv";
+import * as pdf_table_extractor from "pdf-table-extractor";
 
-function parseCsv(l, i, lin, callback) {
-    if (l.length <= i) {
-        callback(lin);
-        return;
-    }
-    const li = l[i];
-    csv.parse(li, (err, line) => {
-        if (line) {
-            lin.push(line[0]);
+function prepareDay(content: string[][], callback: any) {
+    const lectures: string[][] = [];
+    for (let i = 0; i < content.length; i++) {
+        if (i % 2) {
+            continue;
         }
-        parseCsv(l, i + 1, lin, callback);
-    });
-}
-
-function dayLineArray(dayarrays, i, dlin, callback) {
-    if (dayarrays.length <= i) {
-        callback(dlin);
-        return;
-    }
-    const days = dayarrays[i];
-    const l = days.split("\n");
-    const lin = [];
-    parseCsv(l, 0, lin, (line) => {
-        dlin.push(line);
-        dayLineArray(dayarrays, i + 1, dlin, callback);
-    });
-}
-
-export function createDay(content, callback) {
-    const rows = content.split("\n");
-    const dayarrays = [];
-    let lines = "";
-    let weitere = false;
-    let first = true;
-    let lastrow = "";
-    rows.forEach((row) => {
-        if (row.includes("Montag") || row.includes("Dienstag") || row.includes("Mittwoch") ||
-            row.includes("Donnerstag") || row.includes("Freitag")) {
-            if (first) {
-                first = !first;
-            } else {
-                dayarrays.push(lines);
-            }
-            lines = "";
-        }
-        if (row.includes("weitere Termine:")) {
-            weitere = true;
-        }
-        if (!weitere) {
-            lines += row + "\n";
-        }
-        lastrow = row;
-    });
-    dayarrays.push(lines);
-    dayarrays.push(lastrow);
-    dayLineArray(dayarrays, 0, [], (dlin) => {
-        const diffcourses = [];
-        dlin.forEach((item) => {
-            if (item[0]) {
-                for (let i = 0; i < item[0].length; i++) {
-                    const aout = [];
-                    item.forEach((row1) => {
-                        if (row1) {
-                            aout.push(row1[i]);
+        const firstColumn = content[i];
+        const secondColumn = content[i + 1];
+        for (let j = 0; j < firstColumn.length; j++) {
+            const firstValue = firstColumn[j];
+            const secondValue: string[] = secondColumn[j].split("\n");
+            if (firstValue.indexOf("Montag") > -1 || firstValue.indexOf("Dienstag") > -1 ||
+                firstValue.indexOf("Mittwoch") > -1 || firstValue.indexOf("Donnerstag") > -1 ||
+                firstValue.indexOf("Freitag") > -1) {
+                for (let k = 0; k < secondValue.length; k++) {
+                    // Check if that row contains whitespaces that are not supposed to be there
+                    if (secondValue[k].indexOf("         ") > -1) {
+                        let partsToMove = secondValue[k].split("         ");
+                        partsToMove = partsToMove.filter((x) => x);
+                        console.log(partsToMove);
+                        secondValue[k] = partsToMove[0];
+                        for (let l = 1; l < partsToMove.length; l++) {
+                            const firstChars = partsToMove[l];
+                            const secondValueNext = (secondColumn[j + l] || "").split("\n");
+                            secondValueNext[k] = firstChars + "\n" + (secondValueNext[k] || "");
+                            secondColumn[j + l] = secondValueNext.join("\n");
                         }
-                    });
-                    diffcourses.push(aout);
+                    }
                 }
+                lectures.push([firstValue, secondValue.join("\n")].join("\n").split("\n"));
             }
-        });
-        callback(diffcourses);
+        }
+    }
+    console.log(lectures);
+    callback(lectures);
+}
+
+export function createDay(course, callback: any) {
+    pdf_table_extractor("tmp/" + course + ".pdf", (result) => {
+        prepareDay(result.pageTables[0].tables, callback);
+    }, (e) => {
+        callback([]);
+        console.error(e);
     });
 }

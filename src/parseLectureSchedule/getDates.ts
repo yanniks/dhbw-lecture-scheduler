@@ -63,11 +63,11 @@ export function isMidnight(date: string): boolean {
     return m.get("hour") === 0 && m.get("minute") === 0;
 }
 
-export function getDates(course: any, content: any, lang: string, callback: any) {
+export function getDates(course: string, lang: string, callback: any) {
     const courses = require("../../courses.json");
     const defaultRoom = getDefaultLocation(courses[course], lang);
 
-    createDay(content, (days) => {
+    createDay(course, (days) => {
         const output = [];
         days.forEach((day) => {
             let date = day[0].split(", ")[1];

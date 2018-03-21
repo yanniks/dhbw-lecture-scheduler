@@ -1,6 +1,5 @@
 // Updates all lectures in a periodical event
 
-import {exec} from "child_process";
 import * as fs from "fs";
 import * as mv from "mv";
 import {sendNotificationsForCourse} from "./firebase_handling";
@@ -18,7 +17,7 @@ function checkIfUpdateNeeded(filename, course) {
     compareFiles(filename, course, (result) => {
         if (!result) {
             try {
-                fs.unlinkSync("tmp/" + course + ".csv");
+                fs.unlinkSync("tmp/" + course + ".pdf");
             } catch (err) {
                 console.error(err);
             }
@@ -27,27 +26,19 @@ function checkIfUpdateNeeded(filename, course) {
             } catch (err) {
                 console.error(err);
             }
-            mv("tmp/new." + filename, "tmp/" + filename, {mkdirp: true}, (err) => {
+            mv("tmp/new." + filename, "tmp/" + course + ".pdf", {mkdirp: true}, (err) => {
                 if (err) {
                     throw err;
                 }
-                updateCsv(filename, course);
             });
+        } else {
+            try {
+                fs.unlinkSync("tmp/new." + filename);
+            } catch (err) {
+                console.error(err);
+            }
         }
     });
-}
-
-function updateCsv(filename, course) {
-    const tabulaPath = "java/tabula-0.9.2-jar-with-dependencies.jar";
-    exec("java -Dfile.encoding=UTF-8 -jar " + tabulaPath + " -g -n -o tmp/" + course + ".csv tmp/" + filename,
-        (error, stdout, stderr) => {
-            if (!error) {
-                console.info("Updated " + course);
-                sendNotificationsForCourse(course);
-            } else {
-                console.error("An error occurred while updating " + course);
-            }
-        });
 }
 
 function periodicalUpdateJob() {
