@@ -2,8 +2,10 @@ import * as pdf_table_extractor from "pdf-table-extractor";
 
 function prepareDay(content: string[][], callback: any) {
     const lectures: string[][] = [];
+    let nextRowAnalyzed = false;
     for (let i = 0; i < content.length; i++) {
-        if (i % 2) {
+        if (nextRowAnalyzed) {
+            nextRowAnalyzed = false;
             continue;
         }
         const firstColumn = content[i];
@@ -14,6 +16,7 @@ function prepareDay(content: string[][], callback: any) {
             if (firstValue.indexOf("Montag") > -1 || firstValue.indexOf("Dienstag") > -1 ||
                 firstValue.indexOf("Mittwoch") > -1 || firstValue.indexOf("Donnerstag") > -1 ||
                 firstValue.indexOf("Freitag") > -1) {
+                nextRowAnalyzed = true;
                 for (let k = 0; k < secondValue.length; k++) {
                     // Check if that row contains whitespaces that are not supposed to be there
                     if (secondValue[k].indexOf("         ") > -1) {
@@ -33,7 +36,6 @@ function prepareDay(content: string[][], callback: any) {
             }
         }
     }
-    console.log(lectures);
     callback(lectures);
 }
 
