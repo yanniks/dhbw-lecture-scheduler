@@ -1,4 +1,4 @@
-FROM finanzcheck/docker-node-java
+FROM node
 
 COPY . /dhbw/
 RUN mkdir /dhbw/tmp && \
