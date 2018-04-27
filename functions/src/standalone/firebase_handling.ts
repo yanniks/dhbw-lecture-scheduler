@@ -1,14 +1,9 @@
 import * as admin from "firebase-admin";
 import {getPushTokens, unregisterToken} from "./database_support";
 
-admin.initializeApp({
-    credential: admin.credential.cert(require("../private/firebaseadminsdk.json")),
-    databaseURL: "https://dhbw-lecture-scheduler.firebaseio.com",
-});
-
 export function sendNotificationsForCourse(course: string) {
-    getPushTokens(course, (tokens) => {
-        tokens.forEach((token) => {
+    getPushTokens(course, (tokens: any) => {
+        tokens.forEach((token: any) => {
             const message = {
                 data: {
                     course,

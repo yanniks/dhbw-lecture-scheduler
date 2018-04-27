@@ -1,16 +1,15 @@
-import moment = require("moment");
-import {isMidnight} from "./parseLectureSchedule/getDates";
+import {ILecture, isMidnight} from "./parseLectureSchedule/getDates";
 
 // https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
-function hashCode(str) {
+function hashCode(str: string) {
     return str.split("").reduce((prevHash, currVal) =>
         ((prevHash << 5) - prevHash) + currVal.charCodeAt(0), 0);
 }
 
-export function generateIcal(dateChanged: Date, lectures: any, courseTitle: string, res: any) {
+export function generateIcal(dateChanged: Date, lectures: ILecture[], courseTitle: string, res: any) {
     res.type("text/calendar");
 
-    const dtstamp = (dateChanged || new Date()).toISOString()
+    const dtstamp = dateChanged.toISOString()
         .replace(/-/g, "")
         .replace(/:/g, "")
         .split(".")[0] + "Z";
@@ -21,9 +20,9 @@ export function generateIcal(dateChanged: Date, lectures: any, courseTitle: stri
     lectures.forEach((event) => {
         ical += "BEGIN:VEVENT\r\n";
         ical += "SUMMARY:" + event.title + "\r\n";
-        const begin = event.begin.replace(/-/g, "").replace(/:/g, "") + "\r\n";
-        const end = event.end.replace(/-/g, "").replace(/:/g, "") + "\r\n";
-        if (isMidnight(event.begin) && isMidnight(event.end)) {
+        const begin = event.begin!.replace(/-/g, "").replace(/:/g, "") + "\r\n";
+        const end = event.end!.replace(/-/g, "").replace(/:/g, "") + "\r\n";
+        if (isMidnight(event.begin!) && isMidnight(event.end!)) {
             // Seems like a whole-day event
             ical += "DTSTART;VALUE=DATE:" + end.substring(0, 8) + "\r\n";
             ical += "DTEND;VALUE=DATE:" + end.substring(0, 8) + "\r\n";

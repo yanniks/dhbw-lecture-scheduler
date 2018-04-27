@@ -1,7 +1,7 @@
-export function getProf(title, course): string[] {
+export function getProf(title: string, course: string): string[] {
     if (!course) {
         console.error("Could not get lecturer for " + title);
-        return null;
+        return [];
     }
     try {
         const profs = require("../../lecturers/profs_" + course + ".json");
@@ -11,6 +11,6 @@ export function getProf(title, course): string[] {
         }
         return prof;
     } catch (ex) {
-        return null;
+        return [];
     }
 }

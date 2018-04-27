@@ -1,6 +1,4 @@
-import * as pdf_table_extractor from "pdf-table-extractor";
-
-function prepareDay(content: string[][], callback: any) {
+function prepareDay(content: string[][]): Promise<string[][]> {
     const lectures: string[][] = [];
     let nextRowAnalyzed = false;
     for (let i = 0; i < content.length; i++) {
@@ -22,7 +20,6 @@ function prepareDay(content: string[][], callback: any) {
                     if (secondValue[k].indexOf("         ") > -1) {
                         let partsToMove = secondValue[k].split("         ");
                         partsToMove = partsToMove.filter((x) => x);
-                        console.log(partsToMove);
                         secondValue[k] = partsToMove[0];
                         for (let l = 1; l < partsToMove.length; l++) {
                             const firstChars = partsToMove[l];
@@ -36,14 +33,13 @@ function prepareDay(content: string[][], callback: any) {
             }
         }
     }
-    callback(lectures);
+    return Promise.resolve(lectures);
 }
 
-export function createDay(course, callback: any) {
-    pdf_table_extractor("tmp/" + course + ".pdf", (result) => {
-        prepareDay(result.pageTables[0].tables, callback);
-    }, (e) => {
-        callback([]);
-        console.error(e);
+export async function createDay(data: Buffer): Promise<string[][]> {
+    const PDFJS = require("pdfjs-dist/build/pdf");
+    const pdfTableExtractor = require("../pdf-table-extractor").default;
+    return PDFJS.getDocument(data).then(pdfTableExtractor).then((result: any) => {
+        return prepareDay(result.pageTables[0].tables);
     });
 }

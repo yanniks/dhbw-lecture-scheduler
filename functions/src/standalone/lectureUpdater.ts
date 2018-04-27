@@ -1,19 +1,17 @@
 // Updates all lectures in a periodical event
 
-import * as fs from "fs";
-import * as mv from "mv";
 import {sendNotificationsForCourse} from "./firebase_handling";
-import {compareFiles} from "./parseLectureSchedule/fileComparison";
 import {downloadFile} from "./parseLectureSchedule/fileDownload";
 
 // 30 Minutes
 const updateInterval = 1800000;
 
-function updateLectures(course, courseUrl) {
-    downloadFile(courseUrl, (filename) => checkIfUpdateNeeded(filename, course));
+/*async function updateLectures(course, courseUrl) {
+    const data = await downloadFile(courseUrl);
+    console.log(data);
 }
 
-function checkIfUpdateNeeded(filename, course) {
+/*function checkIfUpdateNeeded(filename, course) {
     compareFiles(filename, course, (result) => {
         if (!result) {
             try {
@@ -46,7 +44,6 @@ function periodicalUpdateJob() {
     Object.keys(courses).forEach((course) => {
         updateLectures(course, courses[course].url);
     });
-    setTimeout(periodicalUpdateJob, updateInterval);
 }
 
 function sendUpdatesToAllDevices() {
@@ -61,4 +58,4 @@ function sendUpdatesToAllDevices() {
 export function updateLecturesPeriodically() {
     sendUpdatesToAllDevices();
     periodicalUpdateJob();
-}
+}*/
