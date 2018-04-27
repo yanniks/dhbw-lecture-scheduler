@@ -9,20 +9,20 @@
   },
   "dependencies": {
     "chai": "^3.5.0",
-    "express": "^4.16.2",
-    "firebase-admin": "^5.9.1",
+    "express": "^4.16.3",
+    "firebase-admin": "^5.12.0",
     "https": "^1.0.0",
     "jquery": "^3.3.1",
-    "jsdom": "^11.6.2",
-    "moment": "^2.18.1",
-    "moment-timezone": "^0.5.13",
+    "jsdom": "^11.9.0",
+    "moment": "^2.22.1",
+    "moment-timezone": "^0.5.16",
     "mv": "^2.1.1",
-    "mysql2": "^1.5.2",
+    "mysql2": "^1.5.3",
     "pdf-table-extractor": "^1.0.3",
-    "protobufjs": "^6.8.0",
-    "sequelize": "^4.35.1",
+    "protobufjs": "^6.8.6",
+    "sequelize": "^4.37.6",
     "tslint": "^5.9.1",
-    "typescript": "^2.6.2"
+    "typescript": "^2.8.3"
   },
   "devDependencies": {
     "mocha": "^3.2.0"
