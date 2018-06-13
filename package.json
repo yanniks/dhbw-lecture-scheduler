@@ -38,7 +38,7 @@
     "url": "git+https://github.com/yanniks/dhbw-lecture-scheduler.git"
   },
   "author": "Yannik Ehlert",
-  "license": "Apache-2.0",
+  "license": "GPL-3.0-only",
   "bugs": {
     "url": "https://github.com/yanniks/dhbw-lecture-scheduler/issues"
   },
