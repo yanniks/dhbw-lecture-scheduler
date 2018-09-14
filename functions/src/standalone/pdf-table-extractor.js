@@ -214,6 +214,7 @@ export default function (doc) {
                 var current_x, current_y;
                 var edges = [];
                 var line_max_width = 2;
+                var lineWidth;
 
                 while (opList.fnArray.length) {
                     var fn = opList.fnArray.shift();
