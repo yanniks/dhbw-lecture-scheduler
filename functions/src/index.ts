@@ -9,9 +9,9 @@ const corsMiddleware = cors({
 
 const lecturesApp = express();
 
-lecturesApp.get("/", (req, res) => sendLectures(req.query.course, req, res));
-lecturesApp.delete("/:course", deletePushToken);
-lecturesApp.get("/:course", (req, res) => sendLectures(req.params.course, req, res));
+lecturesApp.get("/lectures", (req, res) => sendLectures(req.query.course, req, res));
+lecturesApp.delete("/lectures/:course", deletePushToken);
+lecturesApp.get("/lectures/:course", (req, res) => sendLectures(req.params.course, req, res));
 
 exports.lectures = functions.https.onRequest(lecturesApp);
 exports.courses = functions.https.onRequest((req, res) => {
