@@ -1,25 +1,27 @@
 import * as admin from "firebase-admin";
-import {getPushTokens, unregisterToken} from "./database_support";
+import {deleteStoredPushToken, getPushTokens} from "./database_support";
 
-export function sendNotificationsForCourse(course: string) {
-    getPushTokens(course, (tokens: any) => {
-        tokens.forEach((token: any) => {
-            const message = {
-                data: {
-                    course,
-                },
-                token: token.token,
-            };
-            admin.messaging().send(message)
-                .then((response) => {
-                    return;
-                })
-                .catch((error) => {
-                    console.error("Could not send push notification.", error);
-                    if (error.code === "messaging/registration-token-not-registered") {
-                        unregisterToken(token);
-                    }
-                });
-        });
+export async function sendNotificationsForCourse(course: string) {
+    const tokens = await getPushTokens(course);
+    if (!tokens) {
+        return;
+    }
+    tokens.registrations.forEach((token: any) => {
+        const message = {
+            data: {
+                course,
+            },
+            token: token.token,
+        };
+        admin.messaging().send(message)
+            .then((response) => {
+                return;
+            })
+            .catch(async (error) => {
+                console.error("Could not send push notification.", error);
+                if (error.code === "messaging/registration-token-not-registered") {
+                    await deleteStoredPushToken(course, token);
+                }
+            });
     });
 }

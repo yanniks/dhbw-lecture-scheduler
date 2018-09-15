@@ -1,3 +1,4 @@
+import {Response} from "firebase-functions";
 import {ILecture, isMidnight} from "./parseLectureSchedule/getDates";
 
 // https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
@@ -6,7 +7,7 @@ function hashCode(str: string) {
         ((prevHash << 5) - prevHash) + currVal.charCodeAt(0), 0);
 }
 
-export function generateIcal(dateChanged: Date, lectures: ILecture[], courseTitle: string, res: any) {
+export function generateIcal(dateChanged: Date, lectures: ILecture[], courseTitle: string, res: Response) {
     res.type("text/calendar");
 
     const dtstamp = dateChanged.toISOString()

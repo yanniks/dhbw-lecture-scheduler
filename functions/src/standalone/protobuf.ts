@@ -19,7 +19,7 @@ export async function generateProtobufForCourse(json: ILecture[]): Promise<Buffe
 
     const response = ServerLectureResponse.create(({lectures: lecturesArray} as any));
     // Encode a message to an Uint8Array (browser) or Buffer (node)
-    return ServerLectureResponse.encode(response);
+    return ServerLectureResponse.encode(response).finish();
 }
 
 export async function generateProtobufCourseList(json: ICourses): Promise<Buffer> {
@@ -37,5 +37,5 @@ export async function generateProtobufCourseList(json: ICourses): Promise<Buffer
 
     const response = ServerCourseResponse.create({courses: coursesArray} as any);
     // Encode a message to an Uint8Array (browser) or Buffer (node)
-    return ServerCourseResponse.encode(response);
+    return ServerCourseResponse.encode(response).finish();
 }

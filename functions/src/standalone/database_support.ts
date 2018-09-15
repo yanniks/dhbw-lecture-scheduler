@@ -1,15 +1,38 @@
 import * as admin from "firebase-admin";
+import {sendNotificationsForCourse} from "./firebase_handling";
 import {ILecture} from "./parseLectureSchedule/getDates";
 
 const db = admin.firestore();
 const lecturesCollection = db.collection("lectures");
+const pushCollection = db.collection("pushTokens");
+const requestCollection = db.collection("requests");
 
-export interface DatabaseObject {
+interface DatabaseObject {
     createdAt: string;
+    lastCheckedForUpdate: string;
     lectures: ILecture[];
 }
 
-export async function getCachedLectures(identifier: string): Promise<DatabaseObject | undefined> {
+export interface PublicDatabaseObject {
+    createdAt: string;
+    lectures: ILecture[];
+    useCachedVersion: boolean;
+}
+
+interface TokenStore {
+    registrations: string[];
+}
+
+interface LectureRequest {
+    ipAddress: string;
+    datetime: string;
+}
+
+interface RequestStore {
+    [userAgent: string]: LectureRequest[];
+}
+
+export async function getCachedLectures(identifier: string): Promise<PublicDatabaseObject | undefined> {
     const doc = lecturesCollection.doc(identifier);
     const lectures = await doc.get();
     if (!lectures.exists) {
@@ -17,46 +40,106 @@ export async function getCachedLectures(identifier: string): Promise<DatabaseObj
     }
     const data = lectures.data() as DatabaseObject;
 
+    return getPublicDatabaseObject(data);
+}
+
+function getPublicDatabaseObject(lectures: DatabaseObject): PublicDatabaseObject {
     // 6 hours for now
     const maximumLifetime = 6 * 60 * 60 * 1000;
 
-    if ((Date.now() - (new Date(data.createdAt)).getTime()) > maximumLifetime) {
-        await doc.delete();
-        return undefined;
-    }
-    return lectures.data() as DatabaseObject;
+    return {
+        createdAt: lectures.createdAt,
+        lectures: lectures.lectures,
+        useCachedVersion: (Date.now() - (new Date(lectures.lastCheckedForUpdate)).getTime()) < maximumLifetime,
+    };
 }
 
-export async function saveLectures(identifier: string, lectures: ILecture[]): Promise<DatabaseObject> {
+export async function saveLectures(identifier: string, lectures: ILecture[]): Promise<PublicDatabaseObject> {
     const doc = lecturesCollection.doc(identifier);
+    const cachedLectures = await doc.get();
+    const currentIsoTime = new Date().toISOString();
+    if (cachedLectures.exists) {
+        const cachedData = cachedLectures.data() as DatabaseObject;
+        if (cachedData.lectures !== lectures) {
+            cachedData.createdAt = currentIsoTime;
+            cachedData.lectures = lectures;
+            sendNotificationsForCourse(identifier);
+        }
+        cachedData.lastCheckedForUpdate = currentIsoTime;
+        await doc.update(cachedData);
+        return getPublicDatabaseObject(cachedData);
+    }
     const dbObject: DatabaseObject = {
-        createdAt: new Date().toISOString(),
+        createdAt: currentIsoTime,
+        lastCheckedForUpdate: currentIsoTime,
         lectures,
     };
+    sendNotificationsForCourse(identifier);
     await doc.set(dbObject);
-    return dbObject;
+    return getPublicDatabaseObject(dbObject);
 }
 
-export function documentRequest(identifier: string, ipAddress: string, userAgent: string) {
-    // LectureRequest.create({ipAddress, requestIdentifier: identifier, userAgent});
+export async function documentRequest(identifier: string, ipAddress: string, userAgent: string) {
+    const doc = requestCollection.doc(identifier);
+    const requests = await doc.get();
+    if (requests.exists) {
+        const cachedData = requests.data() as RequestStore;
+        if (!cachedData[userAgent]) {
+            cachedData[userAgent] = [];
+        }
+        cachedData[userAgent].push({
+            datetime: new Date().toISOString(),
+            ipAddress,
+        });
+        await doc.update(cachedData);
+        return;
+    }
+    const data: RequestStore = {};
+    data[userAgent] = [{
+        datetime: new Date().toISOString(),
+        ipAddress,
+    }];
+    await doc.set(data);
 }
 
-export function unregisterToken(token: string) {
-    /*PushToken.findOne({token}).then((pushToken) => {
-        pushToken.destroy();
-    });*/
+export async function registerPushToken(identifier: string, token: string) {
+    const doc = pushCollection.doc(identifier);
+    const tokens = await doc.get();
+    if (tokens.exists) {
+        const data = tokens.data() as TokenStore;
+        data.registrations.push(token);
+        await doc.update(data);
+        return;
+    }
+    const tokenStore: TokenStore = {
+        registrations: [
+            token,
+        ],
+    };
+    await doc.set(tokenStore);
 }
 
-export function registerPushToken(identifier: string, token: string) {
-    // PushToken.findOrCreate({where: {requestIdentifier: identifier, token}});
+export async function getPushTokens(identifier: string): Promise<TokenStore | undefined> {
+    const doc = pushCollection.doc(identifier);
+    const tokens = await doc.get();
+    if (!tokens.exists) {
+        return undefined;
+    }
+    return tokens.data() as TokenStore;
 }
 
-export function getPushTokens(identifier: string, callback: any) {
-    // PushToken.findAll({where: {requestIdentifier: identifier}}).then(callback);
-}
-
-export function deleteStoredPushToken(identifier: string, token: string) {
-    /*PushToken.findOne({requestIdentifier: identifier, token}).then((pushToken) => {
-        pushToken.destroy();
-    });*/
+export async function deleteStoredPushToken(identifier: string, token: string) {
+    const doc = pushCollection.doc(identifier);
+    const tokens = await doc.get();
+    if (tokens.exists) {
+        const data = tokens.data() as TokenStore;
+        const index = data.registrations.indexOf(token);
+        if (index > -1) {
+            data.registrations.splice(index, 1);
+        } else {
+            return;
+        }
+        await doc.update(data);
+        return;
+    }
 }
