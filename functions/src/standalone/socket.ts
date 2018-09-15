@@ -48,7 +48,7 @@ export async function sendLectures(course: string, req: Request, res: Response) 
             res.send(protocolBuffer);
         } else if (req.get("Accept") === "application/json") {
             res.type("application/json");
-            res.send(JSON.stringify(lectures));
+            res.send(JSON.stringify(lectures.lectures));
         } else {
             const dateChanged = new Date(lectures.createdAt);
             generateIcal(dateChanged, lectures.lectures, jsonCourses[course] ? jsonCourses[course].title : "", res);

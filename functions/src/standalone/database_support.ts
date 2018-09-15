@@ -82,12 +82,20 @@ export async function saveLectures(identifier: string, lectures: ILecture[]): Pr
 export async function documentRequest(identifier: string, ipAddress: string, userAgent: string) {
     const doc = requestCollection.doc(identifier);
     const requests = await doc.get();
+    const escapedUserAgent = userAgent
+        .replace(/\+/g, " ")
+        .replace(/\./g, "_")
+        .replace(/\//g, "_")
+        .replace(/\*/g, "_")
+        .replace(/~/g, "_")
+        .replace(/\[/g, "_")
+        .replace(/]/g, "_");
     if (requests.exists) {
         const cachedData = requests.data() as RequestStore;
-        if (!cachedData[userAgent]) {
-            cachedData[userAgent] = [];
+        if (!cachedData[escapedUserAgent]) {
+            cachedData[escapedUserAgent] = [];
         }
-        cachedData[userAgent].push({
+        cachedData[escapedUserAgent].push({
             datetime: new Date().toISOString(),
             ipAddress,
         });
@@ -95,7 +103,7 @@ export async function documentRequest(identifier: string, ipAddress: string, use
         return;
     }
     const data: RequestStore = {};
-    data[userAgent] = [{
+    data[escapedUserAgent] = [{
         datetime: new Date().toISOString(),
         ipAddress,
     }];
