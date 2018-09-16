@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import {deleteStoredPushToken, getPushTokens} from "./database_support";
+import {logger} from "./logger";
 
 export async function sendNotificationsForCourse(course: string) {
     const tokens = await getPushTokens(course);
@@ -18,7 +19,7 @@ export async function sendNotificationsForCourse(course: string) {
                 return;
             })
             .catch(async (error) => {
-                console.error("Could not send push notification.", error);
+                logger.warn("Could not send push notification.", {error});
                 if (error.code === "messaging/registration-token-not-registered") {
                     await deleteStoredPushToken(course, token);
                 }

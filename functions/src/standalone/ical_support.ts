@@ -1,4 +1,5 @@
 import {Response} from "firebase-functions";
+import moment = require("moment");
 import {ILecture, isMidnight} from "./parseLectureSchedule/getDates";
 
 // https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
@@ -7,13 +8,14 @@ function hashCode(str: string) {
         ((prevHash << 5) - prevHash) + currVal.charCodeAt(0), 0);
 }
 
+function formatDateForICal(date: Date): string {
+    return moment(date).utc().format("YYYYMMDDTHHmmss[Z]");
+}
+
 export function generateIcal(dateChanged: Date, lectures: ILecture[], courseTitle: string, res: Response) {
     res.type("text/calendar");
 
-    const dtstamp = dateChanged.toISOString()
-        .replace(/-/g, "")
-        .replace(/:/g, "")
-        .split(".")[0] + "Z";
+    const dtstamp = formatDateForICal(dateChanged);
 
     let ical = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\n";
     ical += "PRODID:-//Yannik Ehlert//LectureSchedule" + courseTitle + "\r\n";
@@ -21,8 +23,8 @@ export function generateIcal(dateChanged: Date, lectures: ILecture[], courseTitl
     lectures.forEach((event) => {
         ical += "BEGIN:VEVENT\r\n";
         ical += "SUMMARY:" + event.title + "\r\n";
-        const begin = event.begin!.replace(/-/g, "").replace(/:/g, "") + "\r\n";
-        const end = event.end!.replace(/-/g, "").replace(/:/g, "") + "\r\n";
+        const begin = formatDateForICal(event.begin!) + "\r\n";
+        const end = formatDateForICal(event.end!) + "\r\n";
         if (isMidnight(event.begin!) && isMidnight(event.end!)) {
             // Seems like a whole-day event
             ical += "DTSTART;VALUE=DATE:" + end.substring(0, 8) + "\r\n";

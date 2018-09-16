@@ -1,12 +1,11 @@
 import * as moment from "moment-timezone";
 import {getCourses, ICourseDetails} from "../socket";
-import {createDay} from "./createDay";
+import {convertPdfToDays} from "./createDay";
 import {getProf} from "./getProf";
 
 export interface ILecture {
-    date?: string;
-    begin?: string;
-    end?: string;
+    begin?: Date;
+    end?: Date;
     prof?: string[];
     title?: string;
     location?: string;
@@ -39,7 +38,7 @@ function getDefaultLocation(course: ICourseDetails, lang: string) {
     return room;
 }
 
-export function generateDateObject(date: string, time?: string, end?: boolean): string {
+export function generateDateObject(date: string, time?: string, end?: boolean): Date {
     const year = date.substring(0, 4);
     const month = date.substring(4, 6);
     const day = date.substring(6, 8);
@@ -55,120 +54,121 @@ export function generateDateObject(date: string, time?: string, end?: boolean): 
         m.add(1, "day");
     }
     m.tz("UTC");
-    return m.format();
+    return m.toDate();
 }
 
-export function isMidnight(date: string): boolean {
+export function isMidnight(date: Date): boolean {
     const m = moment(date);
     m.tz("Europe/Berlin");
     return m.get("hour") === 0 && m.get("minute") === 0;
+}
+
+function lineContainsDateTimeInformation(line: string): boolean {
+    if (line.includes(" - ")) {
+        return true;
+    } else {
+        const lineexp = line.split(" ");
+        if (line.includes("-")) {
+            for (const str of lineexp) {
+                const strexp = str.split("-");
+                for (const part of strexp) {
+                    const strtocheck = part.replace(/\./g, "");
+                    if (isNumeric(strtocheck) && strtocheck.length === 4) {
+                        return true;
+                    }
+                }
+            }
+        }
+        for (const str of lineexp) {
+            const strtocheck = str.replace(/\./g, "");
+            if (isNumeric(strtocheck) && strtocheck.length === 4) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+interface ILecturePreparationInformation {
+    appointment?: string;
+    courseName: string;
+    date: string;
+    defaultRoom: string;
+    location?: string;
+    timeframe?: string;
+}
+
+function generateLectureObject(information: ILecturePreparationInformation): ILecture {
+    const appointment = updateTitle(information.appointment!);
+    const lecture: ILecture = {title: appointment};
+    if (information.timeframe) {
+        const timesplit = information.timeframe!.replace(/\./g, ":").split("-");
+        if (timesplit[0]) {
+            const begin = timesplit[0].trim().split(" ")[0];
+            lecture.begin = generateDateObject(information.date!, begin, false);
+        }
+        if (timesplit[1]) {
+            const end = timesplit[1].trim();
+            lecture.end = generateDateObject(information.date!, end, true);
+        }
+    } else {
+        lecture.begin = generateDateObject(information.date!, undefined, false);
+        lecture.end = generateDateObject(information.date!, undefined, true);
+    }
+    const prof = getProf(appointment, information.courseName);
+    if (prof) {
+        lecture.prof = prof;
+    }
+    lecture.location = information.location || information.defaultRoom;
+    return lecture;
 }
 
 export async function getDates(courseName: string, courseData: Buffer, lang: string): Promise<ILecture[]> {
     const courses = getCourses();
     const defaultRoom = getDefaultLocation(courses[courseName], lang);
 
-    const days = await createDay(courseData);
+    const days = await convertPdfToDays(courseData);
     const output: ILecture[] = [];
-    days.forEach((day) => {
+    for (const day of days) {
         const dateArray = day[0].split(", ")[1].split(".");
         const date = dateArray.reverse().join("");
         day.shift();
-        let timeframe = "";
-        let appointment = "";
-        let loc = "";
-        day.forEach((line) => {
+
+        const preparationInformation: ILecturePreparationInformation = {
+            courseName,
+            date,
+            defaultRoom,
+        };
+
+        for (let line of day) {
             line = line.replace("XXX", "");
-            let isDate = false;
-            if (line.includes(" - ")) {
-                isDate = true;
-            } else {
-                if (line.includes("-")) {
-                    const lineexp = line.split(" ");
-                    lineexp.forEach((str) => {
-                        const strexp = str.split("-");
-                        strexp.forEach((part) => {
-                            const strtocheck = part.replace(/\./g, "");
-                            if (isNumeric(strtocheck) && strtocheck.length === 4) {
-                                isDate = true;
-                            }
-                        });
-                    });
-                }
-                if (!isDate) {
-                    const lineexp = line.split(" ");
-                    lineexp.forEach((str) => {
-                        const strtocheck = str.replace(/\./g, "");
-                        if (isNumeric(strtocheck) && strtocheck.length === 4) {
-                            isDate = true;
-                        }
-                    });
-                }
-            }
+            const isDate = lineContainsDateTimeInformation(line);
+
             if (isDate) {
-                if (appointment !== "") {
-                    appointment = updateTitle(appointment);
-                    const timesplit = timeframe.replace(/\./g, ":").split("-");
-                    const ap: ILecture = {date, title: appointment};
-                    if (timesplit[0]) {
-                        ap.begin = timesplit[0].trim().split(" ")[0];
-                    }
-                    if (timesplit[1]) {
-                        ap.end = timesplit[1].trim();
-                    }
-                    if (getProf(appointment, courseName)) {
-                        ap.prof = getProf(appointment, courseName);
-                    }
-                    if (loc) {
-                        ap.location = loc;
-                    } else {
-                        ap.location = defaultRoom;
-                    }
-                    output.push(ap);
+                if (preparationInformation.appointment) {
+                    output.push(generateLectureObject(preparationInformation));
                 }
-                appointment = "";
+                preparationInformation.appointment = "";
                 if (line.match("/[a-z]/i")) {
                     const lineexp = line.split(" ");
                     lineexp.forEach((str) => {
                         const strtocheck = str.replace(/\./g, "");
                         if (!isNumeric(strtocheck) && strtocheck.length !== 4) {
-                            appointment += str;
+                            preparationInformation.appointment += str;
                         }
                     });
                 }
-                timeframe = line;
+                preparationInformation.timeframe = line;
             } else {
-                appointment += lineToAppointmentTitle(line);
-                loc = getLocationFromLine(lang, line) || loc;
+                preparationInformation.appointment =
+                    (preparationInformation.appointment || "") + lineToAppointmentTitle(line);
+                preparationInformation.location = getLocationFromLine(lang, line) || preparationInformation.location;
             }
-        });
-        if (appointment !== "") {
-            appointment = updateTitle(appointment);
-            const timesplit = timeframe.replace(/\./g, ":").split("-");
-            const ap: ILecture = {date, title: appointment};
-            if (timesplit[0]) {
-                ap.begin = timesplit[0].trim().split(" ")[0];
-            }
-            if (timesplit[1]) {
-                ap.end = timesplit[1].trim();
-            }
-            if (getProf(appointment, courseName)) {
-                ap.prof = getProf(appointment, courseName);
-            }
-            if (loc) {
-                ap.location = loc;
-            } else if (ap.begin) {
-                ap.location = defaultRoom;
-            }
-            output.push(ap);
         }
-    });
-
-    output.forEach((item) => {
-        item.begin = generateDateObject(item.date!, item.begin, false);
-        item.end = generateDateObject(item.date!, item.end, true);
-        delete item.date;
-    });
+        if (preparationInformation.appointment) {
+            output.push(generateLectureObject(preparationInformation));
+        }
+    }
     return output;
 }
 

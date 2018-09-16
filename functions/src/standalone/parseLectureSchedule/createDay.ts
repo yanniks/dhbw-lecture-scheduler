@@ -1,4 +1,7 @@
-function prepareDay(content: string[][]): Promise<string[][]> {
+// @ts-ignore
+import * as PDFJS from "pdfjs-dist/build/pdf";
+
+function splitTableIntoDays(content: string[][]): string[][] {
     const lectures: string[][] = [];
     let nextRowAnalyzed = false;
     for (let i = 0; i < content.length; i++) {
@@ -33,13 +36,12 @@ function prepareDay(content: string[][]): Promise<string[][]> {
             }
         }
     }
-    return Promise.resolve(lectures);
+    return lectures;
 }
 
-export async function createDay(data: Buffer): Promise<string[][]> {
-    const PDFJS = require("pdfjs-dist/build/pdf");
+export async function convertPdfToDays(data: Buffer): Promise<string[][]> {
     const pdfTableExtractor = require("../pdf-table-extractor").default;
     return PDFJS.getDocument(data).then(pdfTableExtractor).then((result: any) => {
-        return prepareDay(result.pageTables[0].tables);
+        return splitTableIntoDays(result.pageTables[0].tables);
     });
 }

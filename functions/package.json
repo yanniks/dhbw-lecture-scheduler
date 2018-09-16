@@ -2,7 +2,8 @@
   "name": "functions",
   "scripts": {
     "lint": "tslint --project tsconfig.json",
-    "build": "tsc",
+    "build": "npm run lint && npm run build-only",
+    "build-only": "tsc",
     "serve": "npm run build && firebase serve --only functions",
     "shell": "npm run build && firebase experimental:functions:shell",
     "start": "npm run shell",
@@ -11,6 +12,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@google-cloud/logging-winston": "github:googleapis/nodejs-logging-winston",
     "@types/cors": "^2.8.4",
     "axios": "^0.18.0",
     "cors": "^2.8.4",
@@ -22,7 +24,8 @@
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.21",
     "pdfjs-dist": "^2.0.489",
-    "protobufjs": "^6.8.8"
+    "protobufjs": "^6.8.8",
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
