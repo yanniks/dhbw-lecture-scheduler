@@ -88,8 +88,8 @@ function lineContainsDateTimeInformation(line: string): boolean {
                 }
             }
         }
-        for (const str of lineexp) {
-            const strtocheck = str.replace(/\./g, "");
+        if (lineexp.length > 0) {
+            const strtocheck = lineexp[0].replace(/\./g, "");
             if (isNumeric(strtocheck) && strtocheck.length === 4) {
                 return true;
             }
