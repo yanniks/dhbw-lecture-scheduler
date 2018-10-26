@@ -16,9 +16,12 @@ function isNumeric(n: any): boolean {
 }
 
 function updateTitle(title: string): string {
-    let appointment = title.trim();
-    appointment = appointment.replace("IuF", "Investition und Finanzierung");
-    return appointment;
+    return title.trim()
+        .replace("IuF", "Investition und Finanzierung")
+        .replace("EDI", "Electronic Data Interchange")
+        .replace(/^DW/g, "Data Warehouse")
+        .replace("Ind.", "Industrie")
+        .replace("ITIL", "IT Infrastructure Library");
 }
 
 function getRoomLocalized(lang: string): string {
