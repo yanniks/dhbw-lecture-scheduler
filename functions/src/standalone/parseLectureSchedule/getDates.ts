@@ -32,6 +32,12 @@ function getRoomLocalized(lang: string): string {
     }
 }
 
+function addHoursToDate(date: Date, hours: number): Date {
+    const m = moment(date);
+    m.add(hours, "hours");
+    return m.toDate();
+}
+
 function getDefaultLocation(course: ICourseDetails, lang: string) {
     let room = getRoomLocalized(lang);
     room += course.room;
@@ -113,6 +119,9 @@ function generateLectureObject(information: ILecturePreparationInformation): ILe
         if (timesplit[1]) {
             const end = timesplit[1].trim();
             lecture.end = generateDateObject(information.date!, end, true);
+        } else if (lecture.begin) {
+            // If there is no end time, let's add one hour to the beginning.
+            lecture.end = addHoursToDate(lecture.begin, 1);
         }
     } else {
         lecture.begin = generateDateObject(information.date!, undefined, false);
@@ -124,6 +133,16 @@ function generateLectureObject(information: ILecturePreparationInformation): ILe
     }
     lecture.location = information.location || information.defaultRoom;
     return lecture;
+}
+
+function removeTimeframeFromString(line: string): string | undefined {
+    const withoutFirstTimeRange = line.substring(line.indexOf("-") + 1, line.length).trim();
+    const positionOfHourMinuteSeparator = withoutFirstTimeRange.search(/[:\.]/g);
+    const withoutTimeInformation =
+        withoutFirstTimeRange.substring(positionOfHourMinuteSeparator + 3, withoutFirstTimeRange.length);
+    return withoutTimeInformation
+        .replace(/^[ \/]/g, "")
+        .trim();
 }
 
 export async function getDates(courseName: string, courseData: Buffer, lang: string): Promise<ILecture[]> {
@@ -152,14 +171,8 @@ export async function getDates(courseName: string, courseData: Buffer, lang: str
                     output.push(generateLectureObject(preparationInformation));
                 }
                 preparationInformation.appointment = "";
-                if (line.match("/[a-z]/i")) {
-                    const lineexp = line.split(" ");
-                    lineexp.forEach((str) => {
-                        const strtocheck = str.replace(/\./g, "");
-                        if (!isNumeric(strtocheck) && strtocheck.length !== 4) {
-                            preparationInformation.appointment += str;
-                        }
-                    });
+                if (line.match(/[a-z]/g)) {
+                    preparationInformation.appointment += removeTimeframeFromString(line) + " ";
                 }
                 preparationInformation.timeframe = line;
             } else {
