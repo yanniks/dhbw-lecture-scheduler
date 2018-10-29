@@ -17,11 +17,12 @@ function isNumeric(n: any): boolean {
 
 function updateTitle(title: string): string {
     return title.trim()
+        .replace(/^Uhr\S*/g, "").trim()
         .replace("IuF", "Investition und Finanzierung")
         .replace("EDI", "Electronic Data Interchange")
         .replace(/^DW/g, "Data Warehouse")
         .replace("Ind.", "Industrie")
-        .replace("ITIL", "IT Infrastructure Library");
+        .replace(/^ITIL/g, "IT Infrastructure Library");
 }
 
 function getRoomLocalized(lang: string): string {
