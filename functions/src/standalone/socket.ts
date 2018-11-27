@@ -1,9 +1,8 @@
-import * as admin from "firebase-admin";
-
-admin.initializeApp({
-    credential: admin.credential.cert(require("../../private/firebaseadminsdk.json")),
-    databaseURL: "https://dhbw-lecture-scheduler.firebaseio.com",
-});
+import {Request, Response} from "firebase-functions";
+import {deleteStoredPushToken, documentRequest, registerPushToken} from "./database_support";
+import {generateIcal} from "./ical_support";
+import {parseLectures} from "./parseLectureSchedule/parseLectures";
+import {generateProtobufCourseList, generateProtobufForCourse} from "./protobuf";
 
 export interface ICourseDetails {
     address: string;
@@ -15,14 +14,6 @@ export interface ICourseDetails {
 export interface ICourses {
     [key: string]: ICourseDetails;
 }
-
-
-import {Request, Response} from "firebase-functions";
-import {deleteStoredPushToken, documentRequest, registerPushToken} from "./database_support";
-import {generateIcal} from "./ical_support";
-import {parseLectures} from "./parseLectureSchedule/parseLectures";
-import {generateProtobufCourseList, generateProtobufForCourse} from "./protobuf";
-
 
 export function getCourses(): ICourses {
     return require(__dirname + "/../../courses.json");

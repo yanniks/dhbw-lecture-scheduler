@@ -2,6 +2,11 @@ import * as admin from "firebase-admin";
 import {sendNotificationsForCourse} from "./firebase_handling";
 import {ILecture} from "./parseLectureSchedule/getDates";
 
+admin.initializeApp({
+    credential: admin.credential.cert(require("../../private/firebaseadminsdk.json")),
+    databaseURL: "https://dhbw-lecture-scheduler.firebaseio.com",
+});
+
 const db = admin.firestore();
 const lecturesCollection = db.collection("lectures");
 const pushCollection = db.collection("pushTokens");
