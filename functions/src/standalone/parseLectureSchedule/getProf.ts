@@ -6,7 +6,7 @@ export function getProf(title: string, course: string): string[] | undefined {
         return undefined;
     }
     try {
-        const profs = require("../../lecturers/profs_" + course + ".json");
+        const profs = require("../../../lecturers/profs_" + course + ".json");
         const prof = profs[title.trim()];
         if (!Array.isArray(prof)) {
             return prof ? [prof] : undefined;
