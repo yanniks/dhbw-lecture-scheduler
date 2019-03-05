@@ -164,7 +164,7 @@ export async function getDates(courseName: string, courseData: Buffer, lang: str
         };
 
         for (let line of day) {
-            line = line.replace("XXX", "");
+            line = line.replace(/XXX/g, "").replace(/xxx/g, "").trim();
             const isDate = lineContainsDateTimeInformation(line);
 
             if (isDate) {
