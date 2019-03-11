@@ -48,13 +48,30 @@ export async function getCachedLectures(identifier: string): Promise<PublicDatab
     return getPublicDatabaseObject(data);
 }
 
+/**
+ * Converts Firebase database time objects to ISO Date strings.
+ * @param obj
+ */
+function convertDBTimestampsToISODate<T>(obj: T): T {
+    if (Array.isArray(obj)) {
+        return obj.map((i) => convertDBTimestampsToISODate(i)) as any;
+    }
+    for (const key of Object.keys(obj)) {
+        const item = (obj as any)[key];
+        if (item._seconds !== undefined && item._nanoseconds !== undefined) {
+            (obj as any)[key] = new Date(item._seconds * 1000 + item._nanoseconds).toISOString();
+        }
+    }
+    return obj;
+}
+
 function getPublicDatabaseObject(lectures: DatabaseObject): PublicDatabaseObject {
     // 6 hours for now
     const maximumLifetime = 6 * 60 * 60 * 1000;
 
     return {
         createdAt: lectures.createdAt,
-        lectures: lectures.lectures,
+        lectures: convertDBTimestampsToISODate(lectures.lectures),
         useCachedVersion: (Date.now() - (new Date(lectures.lastCheckedForUpdate)).getTime()) < maximumLifetime,
     };
 }
