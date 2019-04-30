@@ -3,7 +3,6 @@ import {sendNotificationsForCourse} from "./firebase_handling";
 import {ILecture} from "./parseLectureSchedule/getDates";
 
 admin.initializeApp({
-    credential: admin.credential.cert(require("../../private/firebaseadminsdk.json")),
     databaseURL: "https://dhbw-lecture-scheduler.firebaseio.com",
 });
 
