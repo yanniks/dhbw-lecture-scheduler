@@ -2,7 +2,12 @@ import { JSDOM } from "jsdom";
 import moment = require("moment");
 import { generateDateObject, ILecture } from "./getDates";
 
-export function getFileContent(key: string): Promise<ILecture[]> {
+interface IRaplaResult {
+    courseName?: string;
+    lectures: ILecture[];
+}
+
+export function getFileContent(key: string): Promise<IRaplaResult> {
     const date = getNextLectureDate();
     let url = "https://rapla.dhbw-stuttgart.de/rapla?key=" + key;
     // JS months go from 0-11, not 1-12
@@ -64,10 +69,12 @@ function getDateOfWeekdayInWeek(weekday: number, weekDate: moment.Moment): momen
     return moment(`${weekString}${weekday}`);
 }
 
-async function parseDOM(dom: any): Promise<ILecture[]> {
+async function parseDOM(dom: JSDOM): Promise<IRaplaResult> {
     const window = dom.window;
     const $ = require("jquery")(window);
     const links = $("a");
+    const h2 = window.document.querySelector("h2");
+    const courseName = h2 !== null ? h2.textContent!.trim() : undefined;
 
     const selectedDateInDom = moment({
         day: $('select[name="day"]').value,
@@ -120,7 +127,7 @@ async function parseDOM(dom: any): Promise<ILecture[]> {
             lecture.end = generateDateObject(date, end, true);
         }
         return lecture;
-    });
+    }).filter((i) => i !== undefined) as ILecture[];
 
-    return lectures.filter((i) => i !== undefined) as ILecture[];
+    return { courseName, lectures };
 }

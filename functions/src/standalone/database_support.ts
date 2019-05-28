@@ -5,9 +5,9 @@ admin.initializeApp({
     databaseURL: "https://dhbw-lecture-scheduler.firebaseio.com",
 });
 
-import {sendNotificationsForCourse} from "./firebase_handling";
+import { sendNotificationsForCourse } from "./firebase_handling";
 import { logger } from "./logger";
-import {ILecture} from "./parseLectureSchedule/getDates";
+import { ILecture } from "./parseLectureSchedule/getDates";
 
 const db = admin.firestore();
 const lecturesCollection = db.collection("lectures");
@@ -15,6 +15,7 @@ const pushCollection = db.collection("pushTokens");
 const requestCollection = db.collection("requests");
 
 interface DatabaseObject {
+    courseName?: string;
     createdAt: string;
     lastCheckedForUpdate: string;
     lectures: ILecture[];
@@ -22,6 +23,7 @@ interface DatabaseObject {
 
 export interface PublicDatabaseObject {
     createdAt: string;
+    courseName?: string;
     lectures: ILecture[];
     useCachedVersion: boolean;
 }
@@ -74,16 +76,22 @@ function getPublicDatabaseObject(lectures: DatabaseObject): PublicDatabaseObject
     // 6 hours for now
     const maximumLifetime = 6 * 60 * 60 * 1000;
 
-    return {
+    const dbObject: PublicDatabaseObject = {
         createdAt: lectures.createdAt,
         lectures: convertDBTimestampsToISODate(lectures.lectures),
         useCachedVersion: (Date.now() - (new Date(lectures.lastCheckedForUpdate)).getTime()) < maximumLifetime,
     };
+    if (lectures.courseName !== undefined) {
+        dbObject.courseName = lectures.courseName;
+    }
+    return dbObject;
 }
 
-export async function saveLectures(identifier: string, lectures: ILecture[]): Promise<PublicDatabaseObject> {
+export async function saveLectures(identifier: string, lectures: ILecture[], courseName?: string):
+    Promise<PublicDatabaseObject> {
     if (!isGoogleCloud) {
         return {
+            courseName,
             createdAt: new Date().toISOString(),
             lectures,
             useCachedVersion: false,
@@ -108,6 +116,9 @@ export async function saveLectures(identifier: string, lectures: ILecture[]): Pr
         lastCheckedForUpdate: currentIsoTime,
         lectures,
     };
+    if (courseName !== undefined) {
+        dbObject.courseName = courseName;
+    }
     sendNotificationsForCourse(identifier);
     await doc.set(dbObject);
     return getPublicDatabaseObject(dbObject);
@@ -179,7 +190,7 @@ export async function getPushTokens(identifier: string): Promise<TokenStore | un
         }
         return tokens.data() as TokenStore;
     } catch (e) {
-        logger.warn("PushTokens could not be retrieved.", {e});
+        logger.warn("PushTokens could not be retrieved.", { e });
         return undefined;
     }
 }

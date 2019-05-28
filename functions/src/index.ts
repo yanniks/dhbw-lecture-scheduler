@@ -4,7 +4,7 @@ import * as functions from "firebase-functions";
 import {INPMPackage} from "./standalone/package-json";
 import {deletePushToken, sendCourseList, sendLectures} from "./standalone/socket";
 
-export const isGoogleCloud = false;
+export const isGoogleCloud = true;
 const corsMiddleware = cors({
     origin: true,
 });

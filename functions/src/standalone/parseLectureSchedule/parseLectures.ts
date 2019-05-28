@@ -11,7 +11,7 @@ export async function parseLectures(course: string, key: string, lang: string): 
     }
     if (key) {
         const raplaDates = await getFileContent(key);
-        return saveLectures(key, raplaDates);
+        return saveLectures(key, raplaDates.lectures, raplaDates.courseName);
     }
     const courseUrl = getUrlForCourse(course);
     if (!courseUrl) {

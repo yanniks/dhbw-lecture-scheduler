@@ -1,8 +1,8 @@
-import {Request, Response} from "firebase-functions";
-import {deleteStoredPushToken, documentRequest, registerPushToken} from "./database_support";
-import {generateIcal} from "./ical_support";
-import {parseLectures} from "./parseLectureSchedule/parseLectures";
-import {generateProtobufCourseList, generateProtobufForCourse} from "./protobuf";
+import { Request, Response } from "firebase-functions";
+import { deleteStoredPushToken, documentRequest, registerPushToken } from "./database_support";
+import { generateIcal } from "./ical_support";
+import { parseLectures } from "./parseLectureSchedule/parseLectures";
+import { generateProtobufCourseList, generateProtobufForCourse } from "./protobuf";
 
 export interface ICourseDetails {
     address: string;
@@ -42,12 +42,14 @@ export async function sendLectures(course: string, req: Request, res: Response) 
             res.send(JSON.stringify(lectures.lectures));
         } else {
             const dateChanged = new Date(lectures.createdAt);
-            generateIcal(dateChanged, lectures.lectures, jsonCourses[course] ? jsonCourses[course].title : "", res);
+            const courseName = jsonCourses[course] ? jsonCourses[course].title :
+                (lectures.courseName ? lectures.courseName : "");
+            generateIcal(dateChanged, lectures.lectures, courseName, res);
         }
         return;
     }
     res.type("application/json");
-    res.send(JSON.stringify({error: "Course not supported."}));
+    res.send(JSON.stringify({ error: "Course not supported." }));
 }
 
 export async function sendCourseList(req: Request, res: Response) {
@@ -69,5 +71,5 @@ export function deletePushToken(req: Request, res: Response) {
         deleteStoredPushToken(req.params.course, pushToken as any);
     }
     res.type("application/json");
-    res.send(JSON.stringify({success: true}));
+    res.send(JSON.stringify({ success: true }));
 }
