@@ -1,10 +1,13 @@
 import * as admin from "firebase-admin";
-import {sendNotificationsForCourse} from "./firebase_handling";
-import {ILecture} from "./parseLectureSchedule/getDates";
+import { isGoogleCloud } from "..";
 
 admin.initializeApp({
     databaseURL: "https://dhbw-lecture-scheduler.firebaseio.com",
 });
+
+import {sendNotificationsForCourse} from "./firebase_handling";
+import { logger } from "./logger";
+import {ILecture} from "./parseLectureSchedule/getDates";
 
 const db = admin.firestore();
 const lecturesCollection = db.collection("lectures");
@@ -37,7 +40,10 @@ interface RequestStore {
 }
 
 export async function getCachedLectures(identifier: string): Promise<PublicDatabaseObject | undefined> {
-    const doc = lecturesCollection.doc(identifier);
+    if (!isGoogleCloud) {
+        return undefined;
+    }
+    const doc = lecturesCollection!.doc(identifier);
     const lectures = await doc.get();
     if (!lectures.exists) {
         return undefined;
@@ -76,7 +82,14 @@ function getPublicDatabaseObject(lectures: DatabaseObject): PublicDatabaseObject
 }
 
 export async function saveLectures(identifier: string, lectures: ILecture[]): Promise<PublicDatabaseObject> {
-    const doc = lecturesCollection.doc(identifier);
+    if (!isGoogleCloud) {
+        return {
+            createdAt: new Date().toISOString(),
+            lectures,
+            useCachedVersion: false,
+        };
+    }
+    const doc = lecturesCollection!.doc(identifier);
     const cachedLectures = await doc.get();
     const currentIsoTime = new Date().toISOString();
     if (cachedLectures.exists) {
@@ -101,7 +114,10 @@ export async function saveLectures(identifier: string, lectures: ILecture[]): Pr
 }
 
 export async function documentRequest(identifier: string, ipAddress: string, userAgent: string) {
-    const doc = requestCollection.doc(identifier);
+    if (!isGoogleCloud) {
+        return;
+    }
+    const doc = requestCollection!.doc(identifier);
     const requests = await doc.get();
     const escapedUserAgent = userAgent
         .replace(/\+/g, " ")
@@ -132,7 +148,10 @@ export async function documentRequest(identifier: string, ipAddress: string, use
 }
 
 export async function registerPushToken(identifier: string, token: string) {
-    const doc = pushCollection.doc(identifier);
+    if (!isGoogleCloud) {
+        return;
+    }
+    const doc = pushCollection!.doc(identifier);
     const tokens = await doc.get();
     if (tokens.exists) {
         const data = tokens.data() as TokenStore;
@@ -149,16 +168,27 @@ export async function registerPushToken(identifier: string, token: string) {
 }
 
 export async function getPushTokens(identifier: string): Promise<TokenStore | undefined> {
-    const doc = pushCollection.doc(identifier);
-    const tokens = await doc.get();
-    if (!tokens.exists) {
+    if (!isGoogleCloud) {
         return undefined;
     }
-    return tokens.data() as TokenStore;
+    const doc = pushCollection!.doc(identifier);
+    try {
+        const tokens = await doc.get();
+        if (!tokens.exists) {
+            return undefined;
+        }
+        return tokens.data() as TokenStore;
+    } catch (e) {
+        logger.warn("PushTokens could not be retrieved.", {e});
+        return undefined;
+    }
 }
 
 export async function deleteStoredPushToken(identifier: string, token: string) {
-    const doc = pushCollection.doc(identifier);
+    if (!isGoogleCloud) {
+        return;
+    }
+    const doc = pushCollection!.doc(identifier);
     const tokens = await doc.get();
     if (tokens.exists) {
         const data = tokens.data() as TokenStore;

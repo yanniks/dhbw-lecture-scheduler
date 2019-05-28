@@ -18,6 +18,5 @@ export const logger = w.createLogger({
     level: "verbose",
     transports: [
         new w.transports.Console(),
-        loggingWinston,
     ],
 });

@@ -19,7 +19,7 @@ export async function parseLectures(course: string, key: string, lang: string): 
     }
     const data = await downloadFile(courseUrl);
     const dates = await getDates(course, data, lang);
-    return await saveLectures(course, dates);
+    return saveLectures(course, dates);
 }
 
 function getUrlForCourse(course: string): string | undefined {

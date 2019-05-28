@@ -41,7 +41,10 @@ function splitTableIntoDays(content: string[][]): string[][] {
 
 export async function convertPdfToDays(data: Buffer): Promise<string[][]> {
     const pdfTableExtractor = require("../pdf-table-extractor").default;
-    return PDFJS.getDocument(data).then(pdfTableExtractor).then((result: any) => {
+    const doc = await PDFJS.getDocument(data);
+    const result = await pdfTableExtractor(doc);
+    if (result.pageTables.length > 0) {
         return splitTableIntoDays(result.pageTables[0].tables);
-    });
+    }
+    return [];
 }
