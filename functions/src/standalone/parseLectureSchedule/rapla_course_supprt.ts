@@ -1,5 +1,6 @@
 import { JSDOM } from "jsdom";
 import moment = require("moment");
+import { logger } from "../logger";
 import { generateDateObject, ILecture } from "./getDates";
 
 interface IRaplaResult {
@@ -7,11 +8,44 @@ interface IRaplaResult {
     lectures: ILecture[];
 }
 
-export function getFileContent(key: string): Promise<IRaplaResult> {
+/**
+ * Returns the lecture schedule for the current and the next week.
+ * @param key Rapla key that is used for communication with the backend.
+ */
+export async function getFileContent(key: string): Promise<IRaplaResult> {
     const date = getNextLectureDate();
-    let url = "https://rapla.dhbw-stuttgart.de/rapla?key=" + key;
+    const nextWeek = date;
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    const weekOne = getLecturesForDate(key, date).catch(catchErrorRetrievingLectures);
+    const weekTwo = getLecturesForDate(key, nextWeek).catch(catchErrorRetrievingLectures);
+    const res = await Promise.all([weekOne, weekTwo]);
+    return {
+        courseName: res[0].courseName || res[1].courseName,
+        lectures: res[0].lectures.concat(res[1].lectures),
+    };
+}
+
+/**
+ * Called in case the lecture plan could not be retrieved successfully.
+ * Returns an empty IRaplaResult object so that the plan can be returned without this specific week.
+ * @param e Error thrown by the retrieval function.
+ */
+async function catchErrorRetrievingLectures(e: Error): Promise<IRaplaResult> {
+    logger.error("Retrieving lectures failed.", {e});
+    return {
+        lectures: [],
+    };
+}
+
+/**
+ * Returns the Rapla lectures for a certain week.
+ * @param key Rapla key that is used for communication with the backend.
+ * @param date All lectures in the week of this date are returned.
+ */
+function getLecturesForDate(key: string, date: Date): Promise<IRaplaResult> {
+    let url = `https://rapla.dhbw-stuttgart.de/rapla?key=${key}`;
     // JS months go from 0-11, not 1-12
-    url += "&day=" + date.getDate() + "&month=" + (date.getMonth() + 1) + "&year=" + date.getFullYear();
+    url += `&day=${date.getDate()}&month=${(date.getMonth() + 1)}&year=${date.getFullYear()}`;
     return JSDOM.fromURL(url).then(parseDOM);
 }
 
