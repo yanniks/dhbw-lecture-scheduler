@@ -14,7 +14,7 @@ interface IRaplaResult {
  */
 export async function getFileContent(key: string): Promise<IRaplaResult> {
     const date = getNextLectureDate();
-    const nextWeek = date;
+    const nextWeek = new Date(date.getTime());
     nextWeek.setDate(nextWeek.getDate() + 7);
     const weekOne = getLecturesForDate(key, date).catch(catchErrorRetrievingLectures);
     const weekTwo = getLecturesForDate(key, nextWeek).catch(catchErrorRetrievingLectures);
@@ -99,7 +99,7 @@ function getDateOfWeekdayInWeek(weekday: number, weekDate: moment.Moment): momen
     if (weekday > 7 || weekday < 1) {
         throw new Error("Weekday may not out of range [1-7]");
     }
-    const weekString = weekDate.format("YYYY[W]ww");
+    const weekString = weekDate.format("YYYY[W]WW");
     return moment(`${weekString}${weekday}`);
 }
 
@@ -111,9 +111,9 @@ async function parseDOM(dom: JSDOM): Promise<IRaplaResult> {
     const courseName = h2 !== null ? h2.textContent!.trim() : undefined;
 
     const selectedDateInDom = moment({
-        day: $('select[name="day"]').value,
-        month: $('select[name="month"]').value,
-        year: $('select[name="year"]').value,
+        day: parseInt((window.document.querySelector('select[name="day"]') as any).value, 10),
+        month: (parseInt((window.document.querySelector('select[name="month"]') as any).value, 10) - 1),
+        year: parseInt((window.document.querySelector('select[name="year"]') as any).value, 10),
     });
     const lectures = Object.values(links).map((item: any) => {
         if (typeof item.text !== "string") {
