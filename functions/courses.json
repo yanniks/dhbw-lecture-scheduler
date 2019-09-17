@@ -1,23 +1,11 @@
 {
-  "wwi2016a": {
-    "title": "WWI2016A",
-    "room": "4.10",
-    "address": "Rotebühlplatz 41/1, 70178 Stuttgart",
-    "url": "https://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Wenger/Vorlesungsplan_2016A_6Sem.pdf"
-  },
-  "wwi2016b": {
-    "title": "WWI2016B",
-    "room": "4.11",
-    "address": "Rotebühlplatz 41/1, 70178 Stuttgart",
-    "url": "https://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Straub/Vorlesungsplan_2016B_4Sem.pdf"
-  },
   "wwi2017a": {
     "title": "WWI2017A",
     "room": "4.10",
     "address": "Rotebühlplatz 41/1, 70178 Stuttgart",
     "url": "https://studium.dhbw-stuttgart.de/fileadmin/wi/Vorlesungsplaene_WI/Vorlesungsplaene_Wenger/Vorlesungsplan_2017A_4Sem.pdf"
   },
-   "wwi2018a": {
+  "wwi2018a": {
     "title": "WWI2018A",
     "room": "4.12",
     "address": "Rotebühlplatz 41/1, 70178 Stuttgart",
