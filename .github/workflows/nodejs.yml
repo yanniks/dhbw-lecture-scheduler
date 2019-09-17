@@ -16,6 +16,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 8.x
+    - name: frontend submodule
+      run: |
+        git submodule init
+        git submodule update
     - name: npm install
       run: |
         npm install --prefix frontend
