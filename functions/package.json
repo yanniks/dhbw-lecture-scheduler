@@ -24,7 +24,7 @@
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.13.1",
     "jquery": "^3.5.0",
-    "jsdom": "^15.1.1",
+    "jsdom": "^16.5.0",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.25",
     "pdfjs-dist": "^2.0.943",
